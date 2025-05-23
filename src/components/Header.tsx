@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Menu, User, Search } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -12,9 +13,9 @@ const Header = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <div className="text-2xl font-bold gradient-text">
+            <Link to="/" className="text-2xl font-bold gradient-text">
               Ponto Simulado
-            </div>
+            </Link>
           </div>
 
           {/* Desktop Navigation */}
@@ -25,9 +26,9 @@ const Header = () => {
             <a href="#concursos" className="text-gray-700 hover:text-primary-600 transition-colors">
               Concursos
             </a>
-            <a href="#simulados" className="text-gray-700 hover:text-primary-600 transition-colors">
+            <Link to="/simulados" className="text-gray-700 hover:text-primary-600 transition-colors">
               Simulados
-            </a>
+            </Link>
             <a href="#apostilas" className="text-gray-700 hover:text-primary-600 transition-colors">
               Apostilas
             </a>
@@ -42,13 +43,17 @@ const Header = () => {
               <Search className="h-4 w-4" />
               Buscar
             </Button>
-            <Button variant="outline" size="sm" className="flex items-center gap-2">
-              <User className="h-4 w-4" />
-              Entrar
-            </Button>
-            <Button size="sm" className="bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700">
-              Assinar Agora
-            </Button>
+            <Link to="/acesso">
+              <Button variant="outline" size="sm" className="flex items-center gap-2">
+                <User className="h-4 w-4" />
+                Entrar
+              </Button>
+            </Link>
+            <Link to="/acesso?tab=cadastro">
+              <Button size="sm" className="bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700">
+                Assinar Agora
+              </Button>
+            </Link>
           </div>
 
           {/* Mobile menu button */}
@@ -73,9 +78,9 @@ const Header = () => {
               <a href="#concursos" className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">
                 Concursos
               </a>
-              <a href="#simulados" className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">
+              <Link to="/simulados" className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">
                 Simulados
-              </a>
+              </Link>
               <a href="#apostilas" className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">
                 Apostilas
               </a>
@@ -83,12 +88,16 @@ const Header = () => {
                 Planos
               </a>
               <div className="pt-4 space-y-2">
-                <Button variant="outline" className="w-full">
-                  Entrar
-                </Button>
-                <Button className="w-full bg-gradient-to-r from-primary-600 to-secondary-600">
-                  Assinar Agora
-                </Button>
+                <Link to="/acesso" className="block w-full">
+                  <Button variant="outline" className="w-full">
+                    Entrar
+                  </Button>
+                </Link>
+                <Link to="/acesso?tab=cadastro" className="block w-full">
+                  <Button className="w-full bg-gradient-to-r from-primary-600 to-secondary-600">
+                    Assinar Agora
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>
