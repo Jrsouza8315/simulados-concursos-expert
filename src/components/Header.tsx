@@ -23,9 +23,9 @@ const Header = () => {
             <a href="#inicio" className="text-gray-700 hover:text-primary-600 transition-colors">
               Início
             </a>
-            <a href="#concursos" className="text-gray-700 hover:text-primary-600 transition-colors">
+            <Link to="/concursos" className="text-gray-700 hover:text-primary-600 transition-colors">
               Concursos
-            </a>
+            </Link>
             <Link to="/simulados" className="text-gray-700 hover:text-primary-600 transition-colors">
               Simulados
             </Link>
@@ -75,9 +75,9 @@ const Header = () => {
               <a href="#inicio" className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">
                 Início
               </a>
-              <a href="#concursos" className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">
+              <Link to="/concursos" className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">
                 Concursos
-              </a>
+              </Link>
               <Link to="/simulados" className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">
                 Simulados
               </Link>
