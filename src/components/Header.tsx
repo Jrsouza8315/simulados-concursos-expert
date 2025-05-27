@@ -20,9 +20,9 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <a href="#inicio" className="text-gray-700 hover:text-primary-600 transition-colors">
+            <Link to="/" className="text-gray-700 hover:text-primary-600 transition-colors">
               Início
-            </a>
+            </Link>
             <Link to="/concursos" className="text-gray-700 hover:text-primary-600 transition-colors">
               Concursos
             </Link>
@@ -72,9 +72,9 @@ const Header = () => {
         {isMenuOpen && (
           <div className="md:hidden py-4 border-t border-gray-200">
             <div className="space-y-2">
-              <a href="#inicio" className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">
+              <Link to="/" className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">
                 Início
-              </a>
+              </Link>
               <Link to="/concursos" className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">
                 Concursos
               </Link>
