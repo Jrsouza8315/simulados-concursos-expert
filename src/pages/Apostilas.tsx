@@ -10,7 +10,8 @@ import {
   SidebarGroupLabel,
   SidebarProvider,
   SidebarTrigger,
-  SidebarInset
+  SidebarInset,
+  SidebarHeader
 } from '@/components/ui/sidebar';
 import Header from '@/components/Header';
 
@@ -99,6 +100,16 @@ const Apostilas = () => {
 
   const FilterSidebar = () => (
     <Sidebar>
+      <SidebarHeader className="p-4 border-b">
+        <div className="flex items-center justify-center">
+          <img 
+            src="/lovable-uploads/87b6127e-8ce4-4418-a857-f04fdf1a552b.png" 
+            alt="Ponto Simulado" 
+            className="h-12 w-auto"
+          />
+        </div>
+      </SidebarHeader>
+      
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className="flex items-center gap-2">
