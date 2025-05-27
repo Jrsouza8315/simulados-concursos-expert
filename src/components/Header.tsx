@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Menu, User, Search } from 'lucide-react';
@@ -31,9 +32,9 @@ const Header = () => {
             <Link to="/apostilas" className="text-gray-700 hover:text-primary-600 transition-colors">
               Apostilas
             </Link>
-            <a href="#planos" className="text-gray-700 hover:text-primary-600 transition-colors">
+            <Link to="/planos" className="text-gray-700 hover:text-primary-600 transition-colors">
               Planos
-            </a>
+            </Link>
           </nav>
 
           {/* Actions */}
@@ -83,9 +84,9 @@ const Header = () => {
               <Link to="/apostilas" className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">
                 Apostilas
               </Link>
-              <a href="#planos" className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">
+              <Link to="/planos" className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">
                 Planos
-              </a>
+              </Link>
               <div className="pt-4 space-y-2">
                 <Link to="/acesso" className="block w-full">
                   <Button variant="outline" className="w-full">
