@@ -1,7 +1,6 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { User } from '@supabase/supabase-js';
-import { supabase } from '@/integrations/supabase/client';
+import { mockSupabase, MockUser, MockUserProfile } from '@/lib/mockSupabase';
 
 export type UserRole = 'admin' | 'assinante' | 'visitante';
 
@@ -13,7 +12,7 @@ interface UserProfile {
 }
 
 interface AuthContextType {
-  user: User | null;
+  user: MockUser | null;
   userProfile: UserProfile | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
@@ -33,13 +32,13 @@ export const useAuth = () => {
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<MockUser | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    mockSupabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
       if (session?.user) {
         fetchUserProfile(session.user.id);
@@ -48,7 +47,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+    const { data: { subscription } } = mockSupabase.auth.onAuthStateChange(
       async (event, session) => {
         setUser(session?.user ?? null);
         if (session?.user) {
@@ -65,13 +64,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const fetchUserProfile = async (userId: string) => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await mockSupabase
         .from('user_profiles')
         .select('*')
         .eq('id', userId)
         .single();
 
-      if (error && error.code !== 'PGRST116') {
+      if (error && error.message !== 'No rows found') {
         console.error('Error fetching user profile:', error);
         return;
       }
@@ -80,7 +79,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUserProfile(data);
       } else {
         // Create default profile for new users
-        const { data: newProfile } = await supabase
+        const { data: newProfile } = await mockSupabase
           .from('user_profiles')
           .insert([
             {
@@ -103,7 +102,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
+    const { error } = await mockSupabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -111,7 +110,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signUp = async (email: string, password: string, role: UserRole = 'visitante') => {
-    const { error } = await supabase.auth.signUp({
+    const { error } = await mockSupabase.auth.signUp({
       email,
       password,
     });
@@ -119,12 +118,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
+    const { error } = await mockSupabase.auth.signOut();
     if (error) throw error;
   };
 
   const resetPassword = async (email: string) => {
-    const { error } = await supabase.auth.resetPasswordForEmail(email);
+    const { error } = await mockSupabase.auth.resetPasswordForEmail(email);
     if (error) throw error;
   };
 

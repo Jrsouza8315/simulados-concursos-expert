@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Users, BookOpen, BarChart3, Settings, Plus } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import Header from '@/components/Header';
-import { supabase } from '@/integrations/supabase/client';
+import { mockSupabase } from '@/lib/mockSupabase';
 
 const AdminDashboard = () => {
   const { userProfile } = useAuth();
@@ -24,7 +24,7 @@ const AdminDashboard = () => {
 
   const fetchStats = async () => {
     try {
-      const { data: usersData } = await supabase
+      const { data: usersData } = await mockSupabase
         .from('user_profiles')
         .select('*');
 
@@ -41,7 +41,7 @@ const AdminDashboard = () => {
 
   const fetchUsers = async () => {
     try {
-      const { data } = await supabase
+      const { data } = await mockSupabase
         .from('user_profiles')
         .select('*')
         .order('created_at', { ascending: false });
@@ -54,7 +54,7 @@ const AdminDashboard = () => {
 
   const updateUserRole = async (userId: string, newRole: string) => {
     try {
-      const { error } = await supabase
+      const { error } = await mockSupabase
         .from('user_profiles')
         .update({ role: newRole })
         .eq('id', userId);
@@ -68,12 +68,12 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-100">
+    <div className="min-h-screen bg-branco-cinza">
       <Header />
       <div className="pt-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-primary-900">
+            <h1 className="text-3xl font-bold text-azul-escuro">
               Dashboard Administrativo
             </h1>
             <p className="text-gray-600 mt-2">
@@ -89,7 +89,7 @@ const AdminDashboard = () => {
                 <Users className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-primary-900">{stats.totalUsers}</div>
+                <div className="text-2xl font-bold text-azul-escuro">{stats.totalUsers}</div>
               </CardContent>
             </Card>
 
@@ -99,7 +99,7 @@ const AdminDashboard = () => {
                 <Users className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-secondary-600">{stats.activeSubscribers}</div>
+                <div className="text-2xl font-bold text-azul-medio">{stats.activeSubscribers}</div>
               </CardContent>
             </Card>
 
@@ -109,7 +109,7 @@ const AdminDashboard = () => {
                 <BookOpen className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-accent-600">{stats.totalSimulados}</div>
+                <div className="text-2xl font-bold text-laranja-avermelhado">{stats.totalSimulados}</div>
               </CardContent>
             </Card>
 
@@ -119,22 +119,22 @@ const AdminDashboard = () => {
                 <BarChart3 className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-primary-700">{stats.totalQuestions}</div>
+                <div className="text-2xl font-bold text-azul-claro-metalico">{stats.totalQuestions}</div>
               </CardContent>
             </Card>
           </div>
 
           {/* Actions */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <Button className="bg-primary-600 hover:bg-primary-700 h-20 flex-col">
+            <Button className="bg-azul-escuro hover:bg-azul-medio h-20 flex-col">
               <Plus className="h-6 w-6 mb-2" />
               Novo Simulado
             </Button>
-            <Button variant="outline" className="h-20 flex-col border-secondary-300 text-secondary-600 hover:bg-secondary-50">
+            <Button variant="outline" className="h-20 flex-col border-azul-medio text-azul-medio hover:bg-azul-claro-metalico hover:bg-opacity-10">
               <BookOpen className="h-6 w-6 mb-2" />
               Gerenciar Questões
             </Button>
-            <Button variant="outline" className="h-20 flex-col border-accent-300 text-accent-600 hover:bg-accent-50">
+            <Button variant="outline" className="h-20 flex-col border-laranja-avermelhado text-laranja-avermelhado hover:bg-laranja-avermelhado hover:bg-opacity-10">
               <BarChart3 className="h-6 w-6 mb-2" />
               Relatórios
             </Button>
