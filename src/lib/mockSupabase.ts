@@ -94,19 +94,11 @@ export const mockSupabase = {
           return { data: null, error: null };
         }
       }),
-      order: (column: string, options?: any) => ({
-        then: async (callback: any) => {
-          if (table === 'user_profiles') {
-            return callback({ data: mockUsers, error: null });
-          }
-          return callback({ data: [], error: null });
-        }
-      }),
-      then: async (callback: any) => {
+      order: (column: string, options?: any) => {
         if (table === 'user_profiles') {
-          return callback({ data: mockUsers, error: null });
+          return Promise.resolve({ data: mockUsers, error: null });
         }
-        return callback({ data: [], error: null });
+        return Promise.resolve({ data: [], error: null });
       }
     }),
     insert: (data: any[]) => ({
@@ -122,18 +114,16 @@ export const mockSupabase = {
       })
     }),
     update: (data: any) => ({
-      eq: (column: string, value: string) => ({
-        then: async (callback: any) => {
-          if (table === 'user_profiles') {
-            const userIndex = mockUsers.findIndex(u => u.id === value);
-            if (userIndex !== -1) {
-              mockUsers[userIndex] = { ...mockUsers[userIndex], ...data };
-            }
-            return callback({ error: null });
+      eq: (column: string, value: string) => {
+        if (table === 'user_profiles') {
+          const userIndex = mockUsers.findIndex(u => u.id === value);
+          if (userIndex !== -1) {
+            mockUsers[userIndex] = { ...mockUsers[userIndex], ...data };
           }
-          return callback({ error: null });
+          return Promise.resolve({ error: null });
         }
-      })
+        return Promise.resolve({ error: null });
+      }
     })
   })
 };

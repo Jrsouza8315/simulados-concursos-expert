@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -26,7 +25,8 @@ const AdminDashboard = () => {
     try {
       const { data: usersData } = await mockSupabase
         .from('user_profiles')
-        .select('*');
+        .select('*')
+        .order('created_at', { ascending: false });
 
       setStats({
         totalUsers: usersData?.length || 0,
