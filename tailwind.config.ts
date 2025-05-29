@@ -26,60 +26,12 @@ export default {
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				primary: {
-					DEFAULT: '#0f2f46',
-					foreground: '#ffffff',
-					50: '#f0f4f7',
-					100: '#dae6ed',
-					200: '#b8d0de',
-					300: '#89b1c7',
-					400: '#548ca8',
-					500: '#3e708c',
-					600: '#2e5a78',
-					700: '#274a62',
-					800: '#253f53',
-					900: '#0f2f46',
+					DEFAULT: 'hsl(var(--primary))',
+					foreground: 'hsl(var(--primary-foreground))'
 				},
 				secondary: {
-					DEFAULT: '#d85126',
-					foreground: '#ffffff',
-					50: '#fef5f1',
-					100: '#fce8dd',
-					200: '#f8d0bb',
-					300: '#f2ae8e',
-					400: '#ea815f',
-					500: '#e45f39',
-					600: '#d85126',
-					700: '#b13b1f',
-					800: '#8e321f',
-					900: '#742c1e',
-				},
-				accent: {
-					DEFAULT: '#619bb0',
-					foreground: '#ffffff',
-					50: '#f0f8fb',
-					100: '#ddefF5',
-					200: '#bee0eb',
-					300: '#91cadb',
-					400: '#619bb0',
-					500: '#4a829a',
-					600: '#406a82',
-					700: '#39566a',
-					800: '#344758',
-					900: '#2e3d4b',
-				},
-				neutral: {
-					DEFAULT: '#f4f4f4',
-					foreground: '#000000',
-					50: '#ffffff',
-					100: '#f4f4f4',
-					200: '#e5e5e5',
-					300: '#d4d4d4',
-					400: '#a3a3a3',
-					500: '#737373',
-					600: '#525252',
-					700: '#404040',
-					800: '#262626',
-					900: '#000000',
+					DEFAULT: 'hsl(var(--secondary))',
+					foreground: 'hsl(var(--secondary-foreground))'
 				},
 				destructive: {
 					DEFAULT: 'hsl(var(--destructive))',
@@ -88,6 +40,10 @@ export default {
 				muted: {
 					DEFAULT: 'hsl(var(--muted))',
 					foreground: 'hsl(var(--muted-foreground))'
+				},
+				accent: {
+					DEFAULT: 'hsl(var(--accent))',
+					foreground: 'hsl(var(--accent-foreground))'
 				},
 				popover: {
 					DEFAULT: 'hsl(var(--popover))',
@@ -107,11 +63,6 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				}
-			},
-			backgroundImage: {
-				'gradient-primary': 'linear-gradient(135deg, #0f2f46 0%, #2e5a78 100%)',
-				'gradient-secondary': 'linear-gradient(135deg, #d85126 0%, #619bb0 100%)',
-				'gradient-success': 'linear-gradient(135deg, #619bb0 0%, #0f2f46 100%)',
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
