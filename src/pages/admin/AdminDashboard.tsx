@@ -1,10 +1,11 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Users, BookOpen, BarChart3, Settings, Plus } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import Header from '@/components/Header';
-import { mockSupabase } from '@/lib/mockSupabase';
+import { supabase } from '@/integrations/supabase/client';
 
 const AdminDashboard = () => {
   const { userProfile } = useAuth();
@@ -23,7 +24,7 @@ const AdminDashboard = () => {
 
   const fetchStats = async () => {
     try {
-      const { data: usersData } = await mockSupabase
+      const { data: usersData } = await supabase
         .from('user_profiles')
         .select('*')
         .order('created_at', { ascending: false });
@@ -41,7 +42,7 @@ const AdminDashboard = () => {
 
   const fetchUsers = async () => {
     try {
-      const { data } = await mockSupabase
+      const { data } = await supabase
         .from('user_profiles')
         .select('*')
         .order('created_at', { ascending: false });
@@ -54,7 +55,7 @@ const AdminDashboard = () => {
 
   const updateUserRole = async (userId: string, newRole: string) => {
     try {
-      const { error } = await mockSupabase
+      const { error } = await supabase
         .from('user_profiles')
         .update({ role: newRole })
         .eq('id', userId);

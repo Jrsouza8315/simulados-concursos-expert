@@ -1,6 +1,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { mockSupabase, MockUser, MockUserProfile } from '@/lib/mockSupabase';
+import { supabase } from '@/integrations/supabase/client';
+import type { User, Session } from '@supabase/supabase-js';
 
 export type UserRole = 'admin' | 'assinante' | 'visitante';
 
@@ -12,8 +13,9 @@ interface UserProfile {
 }
 
 interface AuthContextType {
-  user: MockUser | null;
+  user: User | null;
   userProfile: UserProfile | null;
+  session: Session | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, role?: UserRole) => Promise<void>;
@@ -32,26 +34,24 @@ export const useAuth = () => {
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<MockUser | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Get initial session
-    mockSupabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchUserProfile(session.user.id);
-      }
-      setLoading(false);
-    });
-
-    // Listen for auth changes
-    const { data: { subscription } } = mockSupabase.auth.onAuthStateChange(
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        console.log('Auth state changed:', event, session?.user?.email);
+        setSession(session);
         setUser(session?.user ?? null);
+        
         if (session?.user) {
-          await fetchUserProfile(session.user.id);
+          // Defer the profile fetch to avoid blocking auth state updates
+          setTimeout(() => {
+            fetchUserProfile(session.user.id);
+          }, 0);
         } else {
           setUserProfile(null);
         }
@@ -59,42 +59,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     );
 
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        fetchUserProfile(session.user.id);
+      }
+      setLoading(false);
+    });
+
     return () => subscription.unsubscribe();
   }, []);
 
   const fetchUserProfile = async (userId: string) => {
     try {
-      const { data, error } = await mockSupabase
+      const { data, error } = await supabase
         .from('user_profiles')
         .select('*')
         .eq('id', userId)
         .single();
 
-      if (error && error.message !== 'No rows found') {
+      if (error && error.code !== 'PGRST116') {
         console.error('Error fetching user profile:', error);
         return;
       }
 
       if (data) {
         setUserProfile(data);
-      } else {
-        // Create default profile for new users
-        const { data: newProfile } = await mockSupabase
-          .from('user_profiles')
-          .insert([
-            {
-              id: userId,
-              email: user?.email || '',
-              role: 'visitante',
-              subscription_active: false
-            }
-          ])
-          .select()
-          .single();
-
-        if (newProfile) {
-          setUserProfile(newProfile);
-        }
       }
     } catch (error) {
       console.error('Error in fetchUserProfile:', error);
@@ -102,7 +94,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await mockSupabase.auth.signInWithPassword({
+    const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -110,7 +102,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signUp = async (email: string, password: string, role: UserRole = 'visitante') => {
-    const { error } = await mockSupabase.auth.signUp({
+    const { error } = await supabase.auth.signUp({
       email,
       password,
     });
@@ -118,18 +110,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signOut = async () => {
-    const { error } = await mockSupabase.auth.signOut();
+    const { error } = await supabase.auth.signOut();
     if (error) throw error;
   };
 
   const resetPassword = async (email: string) => {
-    const { error } = await mockSupabase.auth.resetPasswordForEmail(email);
+    const { error } = await supabase.auth.resetPasswordForEmail(email);
     if (error) throw error;
   };
 
   const value = {
     user,
     userProfile,
+    session,
     loading,
     signIn,
     signUp,

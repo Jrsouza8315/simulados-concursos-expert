@@ -1,18 +1,18 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { toast } from "sonner";
-import { Eye, EyeOff, Facebook, UserCheck, Mail } from 'lucide-react';
+import { Eye, EyeOff, Facebook, Mail } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { useAuth } from '@/contexts/AuthContext';
+import { useEffect } from 'react';
 
 // Esquema de validação para o login
 const loginSchema = z.object({
@@ -33,10 +33,30 @@ const cadastroSchema = z.object({
 
 const Acesso = () => {
   const navigate = useNavigate();
+  const { signIn, signUp, user, userProfile } = useAuth();
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [mostrarSenhaCadastro, setMostrarSenhaCadastro] = useState(false);
   const [mostrarConfirmarSenha, setMostrarConfirmarSenha] = useState(false);
   const [tabAtiva, setTabAtiva] = useState("login");
+
+  // Redirect authenticated users to their dashboard
+  useEffect(() => {
+    if (user && userProfile) {
+      switch (userProfile.role) {
+        case 'admin':
+          navigate('/admin');
+          break;
+        case 'assinante':
+          navigate('/dashboard');
+          break;
+        case 'visitante':
+          navigate('/visitante');
+          break;
+        default:
+          navigate('/');
+      }
+    }
+  }, [user, userProfile, navigate]);
 
   // Form de login
   const loginForm = useForm({
@@ -60,23 +80,23 @@ const Acesso = () => {
 
   const onLoginSubmit = async (values: z.infer<typeof loginSchema>) => {
     try {
-      // TODO: Integrar com backend de autenticação
-      console.log("Login:", values);
+      await signIn(values.email, values.senha);
       toast.success('Login realizado com sucesso!');
-      navigate('/');
-    } catch (error) {
-      toast.error('Erro ao fazer login. Verifique suas credenciais.');
+    } catch (error: any) {
+      console.error('Login error:', error);
+      toast.error(error.message || 'Erro ao fazer login. Verifique suas credenciais.');
     }
   };
 
   const onCadastroSubmit = async (values: z.infer<typeof cadastroSchema>) => {
     try {
-      // TODO: Integrar com backend de cadastro
-      console.log("Cadastro:", values);
-      toast.success('Cadastro realizado com sucesso! Faça login para continuar.');
+      await signUp(values.email, values.senha);
+      toast.success('Cadastro realizado com sucesso! Verifique seu email para confirmar a conta.');
       setTabAtiva("login");
-    } catch (error) {
-      toast.error('Erro ao realizar cadastro. Tente novamente.');
+      cadastroForm.reset();
+    } catch (error: any) {
+      console.error('Signup error:', error);
+      toast.error(error.message || 'Erro ao realizar cadastro. Tente novamente.');
     }
   };
 
@@ -158,8 +178,9 @@ const Acesso = () => {
                     <Button 
                       type="submit" 
                       className="w-full bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700"
+                      disabled={loginForm.formState.isSubmitting}
                     >
-                      Entrar
+                      {loginForm.formState.isSubmitting ? 'Entrando...' : 'Entrar'}
                     </Button>
                   </form>
                 </Form>
@@ -284,8 +305,9 @@ const Acesso = () => {
                     <Button 
                       type="submit" 
                       className="w-full bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700"
+                      disabled={cadastroForm.formState.isSubmitting}
                     >
-                      Cadastrar
+                      {cadastroForm.formState.isSubmitting ? 'Cadastrando...' : 'Cadastrar'}
                     </Button>
                   </form>
                 </Form>
