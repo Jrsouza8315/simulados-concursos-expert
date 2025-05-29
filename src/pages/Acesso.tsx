@@ -107,8 +107,12 @@ const Acesso = () => {
         <div className="max-w-md mx-auto mt-16 mb-12 p-6 bg-white rounded-xl shadow-lg">
           <Tabs value={tabAtiva} onValueChange={setTabAtiva} className="w-full">
             <TabsList className="grid w-full grid-cols-2 mb-8">
-              <TabsTrigger value="login">Entrar</TabsTrigger>
-              <TabsTrigger value="cadastro">Cadastrar</TabsTrigger>
+              <TabsTrigger value="login" className="text-sm font-medium">
+                Fazer Login
+              </TabsTrigger>
+              <TabsTrigger value="cadastro" className="text-sm font-medium">
+                Registrar-se
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="login">
@@ -185,6 +189,19 @@ const Acesso = () => {
                   </form>
                 </Form>
 
+                <div className="text-center mt-4">
+                  <p className="text-sm text-gray-600">
+                    Ainda não tem uma conta?{' '}
+                    <button
+                      type="button"
+                      onClick={() => setTabAtiva("cadastro")}
+                      className="text-primary-600 hover:text-primary-700 font-medium hover:underline"
+                    >
+                      Registre-se aqui
+                    </button>
+                  </p>
+                </div>
+
                 <div className="relative my-6">
                   <div className="absolute inset-0 flex items-center">
                     <span className="w-full border-t"></span>
@@ -210,8 +227,8 @@ const Acesso = () => {
             <TabsContent value="cadastro">
               <div className="space-y-6">
                 <div className="text-center mb-6">
-                  <h1 className="text-2xl font-bold">Crie sua conta</h1>
-                  <p className="text-gray-500">Comece sua jornada de estudos hoje</p>
+                  <h1 className="text-2xl font-bold">Criar nova conta</h1>
+                  <p className="text-gray-500">Registre-se para começar sua jornada de estudos</p>
                 </div>
 
                 <Form {...cadastroForm}>
@@ -311,6 +328,19 @@ const Acesso = () => {
                     </Button>
                   </form>
                 </Form>
+
+                <div className="text-center mt-4">
+                  <p className="text-sm text-gray-600">
+                    Já tem uma conta?{' '}
+                    <button
+                      type="button"
+                      onClick={() => setTabAtiva("login")}
+                      className="text-primary-600 hover:text-primary-700 font-medium hover:underline"
+                    >
+                      Faça login aqui
+                    </button>
+                  </p>
+                </div>
 
                 <div className="relative my-6">
                   <div className="absolute inset-0 flex items-center">
