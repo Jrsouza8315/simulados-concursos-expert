@@ -86,7 +86,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       if (data) {
-        setUserProfile(data);
+        // Type cast the role to ensure it matches our UserRole type
+        const profile: UserProfile = {
+          id: data.id,
+          email: data.email,
+          role: data.role as UserRole,
+          subscription_active: data.subscription_active
+        };
+        setUserProfile(profile);
       }
     } catch (error) {
       console.error('Error in fetchUserProfile:', error);
