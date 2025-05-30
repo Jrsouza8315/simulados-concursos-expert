@@ -1,0 +1,72 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 60 3% 96%; /* #f4f4f2 */
+    --foreground: 345 11% 8%; /* #191013 */
+    --primary: 222 49% 28%; /* #243a69 */
+    --accent: 203 29% 50%; /* #5b88a5 */
+    --neutral: 33 13% 82%; /* #d4cdc5 */
+  }
+
+  body {
+    @apply bg-background text-foreground font-['Inter',sans-serif];
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary text-white hover:bg-primary/90 px-4 py-2 rounded-md transition-colors;
+  }
+
+  .btn-secondary {
+    @apply bg-accent text-white hover:bg-accent/90 px-4 py-2 rounded-md transition-colors;
+  }
+
+  .nav-link {
+    @apply text-accent hover:text-accent/80 transition-colors;
+  }
+
+  .card {
+    @apply bg-neutral/30 rounded-lg p-6 shadow-sm;
+  }
+
+  .question-card {
+    @apply bg-white rounded-lg p-6 shadow-md border border-neutral/20;
+  }
+
+  .header {
+    @apply bg-primary text-white fixed top-0 w-full z-50 shadow-md;
+  }
+
+  .sidebar {
+    @apply bg-neutral/20 fixed h-full w-64 left-0 top-0 p-4;
+  }
+
+  .main-content {
+    @apply bg-background min-h-screen pt-16 px-4;
+  }
+
+  .heading-1 {
+    @apply text-3xl font-bold text-foreground mb-6;
+  }
+
+  .heading-2 {
+    @apply text-2xl font-semibold text-foreground mb-4;
+  }
+
+  .text-link {
+    @apply text-accent hover:text-accent/80 underline-offset-4 hover:underline;
+  }
+
+  .tag {
+    @apply bg-neutral/40 text-foreground px-3 py-1 rounded-full text-sm;
+  }
+
+  .input-field {
+    @apply border border-neutral rounded-md px-3 py-2 focus:ring-2 focus:ring-accent focus:border-transparent outline-none;
+  }
+}

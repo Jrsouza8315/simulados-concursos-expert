@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -6,6 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import { MainLayout } from "@/components/layout/MainLayout";
+import { SupabaseExample } from "@/components/examples/SupabaseExample";
 
 import Index from "./pages/Index";
 import Simulados from "./pages/Simulados";
@@ -28,42 +29,62 @@ const App = () => (
       <Sonner />
       <AuthProvider>
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/concursos" element={<Concursos />} />
-            <Route path="/apostilas" element={<Apostilas />} />
-            <Route path="/planos" element={<Planos />} />
-            <Route path="/acesso" element={<Acesso />} />
-            <Route path="/unauthorized" element={<Unauthorized />} />
-            
-            {/* Protected Routes */}
-            <Route path="/admin" element={
-              <ProtectedRoute requiredRole="admin">
-                <AdminDashboard />
-              </ProtectedRoute>
-            } />
-            
-            <Route path="/dashboard" element={
-              <ProtectedRoute allowedRoles={["assinante", "admin"]}>
-                <AssinanteDashboard />
-              </ProtectedRoute>
-            } />
-            
-            <Route path="/simulados" element={
-              <ProtectedRoute allowedRoles={["assinante", "admin"]} redirectTo="/visitante">
-                <Simulados />
-              </ProtectedRoute>
-            } />
-            
-            <Route path="/visitante" element={
-              <ProtectedRoute allowedRoles={["visitante", "assinante", "admin"]}>
-                <VisitanteDashboard />
-              </ProtectedRoute>
-            } />
-            
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <MainLayout>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/concursos" element={<Concursos />} />
+              <Route path="/apostilas" element={<Apostilas />} />
+              <Route path="/planos" element={<Planos />} />
+              <Route path="/acesso" element={<Acesso />} />
+              <Route path="/unauthorized" element={<Unauthorized />} />
+
+              {/* Protected Routes */}
+              <Route
+                path="/admin"
+                element={
+                  <ProtectedRoute requiredRole="admin">
+                    <AdminDashboard />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute allowedRoles={["assinante", "admin"]}>
+                    <AssinanteDashboard />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/simulados"
+                element={
+                  <ProtectedRoute
+                    allowedRoles={["assinante", "admin"]}
+                    redirectTo="/visitante"
+                  >
+                    <Simulados />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/visitante"
+                element={
+                  <ProtectedRoute
+                    allowedRoles={["visitante", "assinante", "admin"]}
+                  >
+                    <VisitanteDashboard />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </MainLayout>
+          <SupabaseExample />
         </BrowserRouter>
       </AuthProvider>
     </TooltipProvider>
