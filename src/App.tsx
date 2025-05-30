@@ -1,12 +1,12 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { Toaster } from "./components/ui/toaster";
+import { Toaster as Sonner } from "./components/ui/sonner";
+import { TooltipProvider } from "./components/ui/tooltip";
+import { ThemeProvider } from "./components/theme-provider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "@/contexts/AuthContext";
-import ProtectedRoute from "@/components/auth/ProtectedRoute";
-import { MainLayout } from "@/components/layout/MainLayout";
-import { SupabaseExample } from "@/components/examples/SupabaseExample";
+import { AuthProvider } from "./contexts/AuthContext";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
+import { MainLayout } from "./components/layout/MainLayout";
 
 import Index from "./pages/Index";
 import Simulados from "./pages/Simulados";
@@ -24,70 +24,71 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <AuthProvider>
-        <BrowserRouter>
-          <MainLayout>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/concursos" element={<Concursos />} />
-              <Route path="/apostilas" element={<Apostilas />} />
-              <Route path="/planos" element={<Planos />} />
-              <Route path="/acesso" element={<Acesso />} />
-              <Route path="/unauthorized" element={<Unauthorized />} />
+    <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <AuthProvider>
+          <BrowserRouter>
+            <MainLayout>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/concursos" element={<Concursos />} />
+                <Route path="/apostilas" element={<Apostilas />} />
+                <Route path="/planos" element={<Planos />} />
+                <Route path="/acesso" element={<Acesso />} />
+                <Route path="/unauthorized" element={<Unauthorized />} />
 
-              {/* Protected Routes */}
-              <Route
-                path="/admin"
-                element={
-                  <ProtectedRoute requiredRole="admin">
-                    <AdminDashboard />
-                  </ProtectedRoute>
-                }
-              />
+                {/* Protected Routes */}
+                <Route
+                  path="/admin"
+                  element={
+                    <ProtectedRoute requiredRole="admin">
+                      <AdminDashboard />
+                    </ProtectedRoute>
+                  }
+                />
 
-              <Route
-                path="/dashboard"
-                element={
-                  <ProtectedRoute allowedRoles={["assinante", "admin"]}>
-                    <AssinanteDashboard />
-                  </ProtectedRoute>
-                }
-              />
+                <Route
+                  path="/dashboard"
+                  element={
+                    <ProtectedRoute allowedRoles={["assinante", "admin"]}>
+                      <AssinanteDashboard />
+                    </ProtectedRoute>
+                  }
+                />
 
-              <Route
-                path="/simulados"
-                element={
-                  <ProtectedRoute
-                    allowedRoles={["assinante", "admin"]}
-                    redirectTo="/visitante"
-                  >
-                    <Simulados />
-                  </ProtectedRoute>
-                }
-              />
+                <Route
+                  path="/simulados"
+                  element={
+                    <ProtectedRoute
+                      allowedRoles={["assinante", "admin"]}
+                      redirectTo="/visitante"
+                    >
+                      <Simulados />
+                    </ProtectedRoute>
+                  }
+                />
 
-              <Route
-                path="/visitante"
-                element={
-                  <ProtectedRoute
-                    allowedRoles={["visitante", "assinante", "admin"]}
-                  >
-                    <VisitanteDashboard />
-                  </ProtectedRoute>
-                }
-              />
+                <Route
+                  path="/visitante"
+                  element={
+                    <ProtectedRoute
+                      allowedRoles={["visitante", "assinante", "admin"]}
+                    >
+                      <VisitanteDashboard />
+                    </ProtectedRoute>
+                  }
+                />
 
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </MainLayout>
-          <SupabaseExample />
-        </BrowserRouter>
-      </AuthProvider>
-    </TooltipProvider>
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </MainLayout>
+          </BrowserRouter>
+        </AuthProvider>
+      </TooltipProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 

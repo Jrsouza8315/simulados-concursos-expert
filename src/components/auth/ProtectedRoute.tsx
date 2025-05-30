@@ -1,50 +1,40 @@
-
-import React from 'react';
-import { Navigate } from 'react-router-dom';
-import { useAuth, UserRole } from '@/contexts/AuthContext';
-import { Loader2 } from 'lucide-react';
+import { ReactNode } from "react";
+import { Navigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 
 interface ProtectedRouteProps {
-  children: React.ReactNode;
-  requiredRole?: UserRole;
-  allowedRoles?: UserRole[];
+  children: ReactNode;
+  requiredRole?: "admin" | "assinante" | "visitante";
+  allowedRoles?: ("admin" | "assinante" | "visitante")[];
   redirectTo?: string;
 }
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
+const ProtectedRoute = ({
   children,
   requiredRole,
   allowedRoles,
-  redirectTo = '/acesso'
-}) => {
+  redirectTo = "/unauthorized",
+}: ProtectedRouteProps) => {
   const { user, userProfile, loading } = useAuth();
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
+    return <div>Carregando...</div>;
   }
 
   if (!user) {
+    return <Navigate to="/acesso" replace />;
+  }
+
+  if (!userProfile) {
+    return <div>Carregando perfil...</div>;
+  }
+
+  if (requiredRole && userProfile.role !== requiredRole) {
     return <Navigate to={redirectTo} replace />;
   }
 
-  if (requiredRole && userProfile?.role !== requiredRole) {
-    // Redirect based on user role
-    switch (userProfile?.role) {
-      case 'admin':
-        return <Navigate to="/admin" replace />;
-      case 'assinante':
-        return <Navigate to="/dashboard" replace />;
-      default:
-        return <Navigate to="/visitante" replace />;
-    }
-  }
-
-  if (allowedRoles && !allowedRoles.includes(userProfile?.role as UserRole)) {
-    return <Navigate to="/unauthorized" replace />;
+  if (allowedRoles && !allowedRoles.includes(userProfile.role)) {
+    return <Navigate to={redirectTo} replace />;
   }
 
   return <>{children}</>;
