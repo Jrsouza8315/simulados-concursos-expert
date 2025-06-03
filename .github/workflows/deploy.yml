@@ -23,8 +23,12 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Create .nojekyll file
+        run: touch dist/.nojekyll
+
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
+          cname: # Se você tiver um domínio personalizado, coloque aqui

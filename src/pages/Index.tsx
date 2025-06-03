@@ -1,12 +1,12 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "../components/ui/button";
 import { Search, BookOpen, Target, Award, Users } from "lucide-react";
-import HeroSection from "@/components/HeroSection";
-import FeaturesSection from "@/components/FeaturesSection";
-import StatsSection from "@/components/StatsSection";
-import TestimonialsSection from "@/components/TestimonialsSection";
-import PricingSection from "@/components/PricingSection";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import HeroSection from "../components/HeroSection";
+import FeaturesSection from "../components/FeaturesSection";
+import StatsSection from "../components/StatsSection";
+import TestimonialsSection from "../components/TestimonialsSection";
+import PricingSection from "../components/PricingSection";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 
 const Index = () => {
   return (
