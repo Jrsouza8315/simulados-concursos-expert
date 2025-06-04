@@ -31,9 +31,6 @@ const Header = () => {
     }
   };
 
-  const canAccessSimulados =
-    userProfile?.role === "assinante" || userProfile?.role === "admin";
-
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-sm border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -63,18 +60,12 @@ const Header = () => {
             >
               Concursos
             </Link>
-            {canAccessSimulados ? (
-              <Link
-                to="/simulados"
-                className="text-gray-700 hover:text-primary-600 transition-colors"
-              >
-                Simulados
-              </Link>
-            ) : (
-              <span className="text-gray-400 cursor-not-allowed">
-                Simulados
-              </span>
-            )}
+            <Link
+              to="/simulados"
+              className="text-gray-700 hover:text-primary-600 transition-colors"
+            >
+              Simulados
+            </Link>
             <Link
               to="/apostilas"
               className="text-gray-700 hover:text-primary-600 transition-colors"
@@ -182,18 +173,12 @@ const Header = () => {
               >
                 Concursos
               </Link>
-              {canAccessSimulados ? (
-                <Link
-                  to="/simulados"
-                  className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
-                >
-                  Simulados
-                </Link>
-              ) : (
-                <span className="block px-3 py-2 text-gray-400">
-                  Simulados (Premium)
-                </span>
-              )}
+              <Link
+                to="/simulados"
+                className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
+              >
+                Simulados
+              </Link>
               <Link
                 to="/apostilas"
                 className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
