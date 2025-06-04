@@ -3,7 +3,7 @@ import { Toaster as Sonner } from "./components/ui/sonner";
 import { TooltipProvider } from "./components/ui/tooltip";
 import { ThemeProvider } from "./components/theme-provider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { HashRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import { MainLayout } from "./components/layout/MainLayout";
@@ -29,7 +29,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <AuthProvider>
-          <HashRouter>
+          <BrowserRouter basename="/simulados-concursos-expert">
             <MainLayout>
               <Routes>
                 <Route path="/" element={<Index />} />
@@ -38,6 +38,7 @@ const App = () => (
                 <Route path="/planos" element={<Planos />} />
                 <Route path="/acesso" element={<Acesso />} />
                 <Route path="/unauthorized" element={<Unauthorized />} />
+                <Route path="/simulados" element={<Simulados />} />
 
                 {/* Protected Routes */}
                 <Route
@@ -61,8 +62,6 @@ const App = () => (
                   }
                 />
 
-                <Route path="/simulados" element={<Simulados />} />
-
                 <Route
                   path="/visitante"
                   element={
@@ -78,7 +77,7 @@ const App = () => (
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </MainLayout>
-          </HashRouter>
+          </BrowserRouter>
         </AuthProvider>
       </TooltipProvider>
     </ThemeProvider>
