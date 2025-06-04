@@ -42,9 +42,9 @@ const Header = () => {
           <div className="flex items-center -ml-3">
             <Link to="/" className="flex items-center">
               <img
-                src="/lovable-uploads/87b6127e-8ce4-4418-a857-f04fdf1a552b.png"
+                src="/simulados-concursos-expert/assets/logo.png"
                 alt="PONTO"
-                className="h-16 w-auto"
+                className="h-12 w-auto object-contain"
               />
             </Link>
           </div>

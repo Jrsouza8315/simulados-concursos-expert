@@ -43,7 +43,10 @@ const App = () => (
                 <Route
                   path="/admin"
                   element={
-                    <ProtectedRoute requiredRole="admin">
+                    <ProtectedRoute
+                      requiredRole="admin"
+                      redirectTo="/unauthorized"
+                    >
                       <AdminDashboard />
                     </ProtectedRoute>
                   }
@@ -58,17 +61,7 @@ const App = () => (
                   }
                 />
 
-                <Route
-                  path="/simulados"
-                  element={
-                    <ProtectedRoute
-                      allowedRoles={["assinante", "admin"]}
-                      redirectTo="/visitante"
-                    >
-                      <Simulados />
-                    </ProtectedRoute>
-                  }
-                />
+                <Route path="/simulados" element={<Simulados />} />
 
                 <Route
                   path="/visitante"
