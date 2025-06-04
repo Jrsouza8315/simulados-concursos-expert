@@ -42,7 +42,7 @@ const Header = () => {
           <div className="flex items-center -ml-3">
             <Link to="/" className="flex items-center">
               <img
-                src="/simulados-concursos-expert/assets/logo.png"
+                src="/simulados-concursos-expert/PONTO (3).png"
                 alt="PONTO"
                 className="h-12 w-auto object-contain"
               />
