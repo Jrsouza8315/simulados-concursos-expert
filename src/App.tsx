@@ -14,6 +14,7 @@ import Concursos from "./pages/Concursos";
 import Apostilas from "./pages/Apostilas";
 import Planos from "./pages/Planos";
 import Acesso from "./pages/Acesso";
+import ResetPassword from "./pages/ResetPassword";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AssinanteDashboard from "./pages/assinante/AssinanteDashboard";
 import VisitanteDashboard from "./pages/visitante/VisitanteDashboard";
@@ -37,6 +38,7 @@ const App = () => (
                 <Route path="/apostilas" element={<Apostilas />} />
                 <Route path="/planos" element={<Planos />} />
                 <Route path="/acesso" element={<Acesso />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/unauthorized" element={<Unauthorized />} />
                 <Route path="/simulados" element={<Simulados />} />
 
