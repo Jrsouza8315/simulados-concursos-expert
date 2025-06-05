@@ -21,25 +21,14 @@ const EsqueceuSenha: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Função para obter o caminho base da aplicação
-  const getBasePath = () => {
-    // Em desenvolvimento, usa o caminho local
-    if (import.meta.env.DEV) {
-      return "";
-    }
-    // Em produção, usa o caminho do GitHub Pages
-    return "/simulados-concursos-expert";
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${
-          window.location.origin
-        }${getBasePath()}/#/reset-password`,
+        redirectTo:
+          "https://jrsouza8315.github.io/simulados-concursos-expert/#/reset-password",
       });
 
       if (error) throw error;
