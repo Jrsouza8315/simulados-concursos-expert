@@ -3,13 +3,9 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
-  base: "/simulados-concursos-expert/",
-  server: {
-    host: "::",
-    port: 8080,
-  },
+export default defineConfig({
   plugins: [react()],
+  base: "/simulados-concursos-expert/",
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
@@ -22,14 +18,9 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       output: {
         manualChunks: {
-          vendor: [
-            "react",
-            "react-dom",
-            "react-router-dom",
-            "@tanstack/react-query",
-          ],
+          vendor: ["react", "react-dom", "react-router-dom"],
         },
       },
     },
   },
-}));
+});
