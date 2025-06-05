@@ -6,6 +6,11 @@ import path from "path";
 export default defineConfig({
   plugins: [react()],
   base: "/simulados-concursos-expert/",
+  server: {
+    port: 8080,
+    host: true,
+    open: true,
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
@@ -13,7 +18,7 @@ export default defineConfig({
   },
   build: {
     outDir: "dist",
-    assetsDir: "assets",
+    emptyOutDir: true,
     sourcemap: true,
     rollupOptions: {
       output: {
