@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { useNavigate, Link } from "react-router-dom";
+import { toast } from "sonner";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
 import {
   Card,
   CardContent,
@@ -11,17 +11,15 @@ import {
   CardHeader,
   CardTitle,
   CardFooter,
-} from "@/components/ui/card";
-import { Link } from "react-router-dom";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import { supabase } from "@/integrations/supabase/client"; // Importando o cliente Supabase do local correto
+} from "../components/ui/card";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
+import { supabase } from "../integrations/supabase/client";
 
 const EsqueceuSenha: React.FC = () => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,22 +32,18 @@ const EsqueceuSenha: React.FC = () => {
 
       if (error) throw error;
 
-      toast({
-        title: "Email enviado",
-        description: "Verifique sua caixa de entrada para redefinir sua senha.",
-      });
+      toast.success(
+        "Email enviado! Verifique sua caixa de entrada para redefinir sua senha."
+      );
 
       // Redirecionar para a página de login após 3 segundos
       setTimeout(() => {
         navigate("/acesso");
       }, 3000);
     } catch (error: any) {
-      toast({
-        title: "Erro",
-        description:
-          error.message || "Não foi possível enviar o email de recuperação.",
-        variant: "destructive",
-      });
+      toast.error(
+        error.message || "Não foi possível enviar o email de recuperação."
+      );
     } finally {
       setLoading(false);
     }
