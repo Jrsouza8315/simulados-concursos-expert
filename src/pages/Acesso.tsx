@@ -202,6 +202,10 @@ const Acesso = () => {
                             <Link
                               to="/esqueceu-senha"
                               className="text-sm text-primary hover:underline"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                navigate("/esqueceu-senha");
+                              }}
                             >
                               Esqueceu a senha?
                             </Link>

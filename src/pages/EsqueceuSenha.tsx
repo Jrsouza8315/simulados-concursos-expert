@@ -14,6 +14,8 @@ import {
 } from "@/components/ui/card";
 import { useAuth } from "@/contexts/AuthContext";
 import { Link } from "react-router-dom";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 const EsqueceuSenha: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -55,42 +57,49 @@ const EsqueceuSenha: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto flex items-center justify-center min-h-screen p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Recuperar Senha</CardTitle>
-          <CardDescription>
-            Digite seu email para receber as instruções de recuperação de senha.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="seu@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                disabled={loading}
-              />
-            </div>
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Enviando..." : "Enviar instruções"}
-            </Button>
-          </form>
-        </CardContent>
-        <CardFooter className="flex justify-center">
-          <Link
-            to="/acesso"
-            className="text-sm text-muted-foreground hover:text-primary"
-          >
-            Voltar para o login
-          </Link>
-        </CardFooter>
-      </Card>
+    <div className="flex flex-col min-h-screen">
+      <Header />
+      <main className="flex-grow pt-16">
+        <div className="container mx-auto flex items-center justify-center min-h-[calc(100vh-200px)] p-4">
+          <Card className="w-full max-w-md">
+            <CardHeader>
+              <CardTitle>Recuperar Senha</CardTitle>
+              <CardDescription>
+                Digite seu email para receber as instruções de recuperação de
+                senha.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="seu@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    disabled={loading}
+                  />
+                </div>
+                <Button type="submit" className="w-full" disabled={loading}>
+                  {loading ? "Enviando..." : "Enviar instruções"}
+                </Button>
+              </form>
+            </CardContent>
+            <CardFooter className="flex justify-center">
+              <Link
+                to="/acesso"
+                className="text-sm text-muted-foreground hover:text-primary"
+              >
+                Voltar para o login
+              </Link>
+            </CardFooter>
+          </Card>
+        </div>
+      </main>
+      <Footer />
     </div>
   );
 };
