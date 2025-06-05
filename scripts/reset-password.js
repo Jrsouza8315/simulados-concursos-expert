@@ -20,7 +20,7 @@ const resetPassword = async () => {
       "hbrcomercialssa@gmail.com",
       {
         redirectTo:
-          "https://jrsouza8315.github.io/simulados-concursos-expert/reset-password",
+          "https://jrsouza8315.github.io/simulados-concursos-expert/#/reset-password",
       }
     );
 
@@ -38,11 +38,9 @@ const resetPassword = async () => {
     console.log(
       "1. O link no email irá redirecionar para a página de redefinição de senha"
     );
+    console.log("2. Se a página estiver em branco, limpe o cache do navegador");
     console.log(
-      "2. Se a página estiver em branco, aguarde alguns segundos para carregar"
-    );
-    console.log(
-      "3. Em caso de erro, copie o token da URL e use a página /reset-password manualmente"
+      "3. Aguarde alguns segundos para a página carregar completamente"
     );
     console.log("----------------------------------------");
   } catch (error) {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
@@ -13,27 +13,47 @@ import {
 } from "@/components/ui/card";
 import { useAuth } from "@/contexts/AuthContext";
 
-export default function ResetPassword() {
+const ResetPassword: React.FC = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [initializing, setInitializing] = useState(true);
   const [error, setError] = useState("");
   const { supabase } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
-    // Verificar se há um token de recuperação na URL
-    const hash = window.location.hash;
-    if (!hash || !hash.includes("type=recovery")) {
-      navigate("/acesso");
-      toast({
-        title: "Erro",
-        description: "Link de recuperação inválido.",
-        variant: "destructive",
-      });
-    }
-  }, [navigate, toast]);
+    const checkRecoveryToken = async () => {
+      try {
+        const hash = window.location.hash;
+        if (!hash || !hash.includes("type=recovery")) {
+          throw new Error("Link de recuperação inválido");
+        }
+
+        // Verificar se o token é válido
+        const {
+          data: { session },
+          error,
+        } = await supabase.auth.getSession();
+        if (error || !session) {
+          throw new Error("Sessão inválida ou expirada");
+        }
+
+        setInitializing(false);
+      } catch (error: any) {
+        console.error("Erro na verificação:", error);
+        toast({
+          title: "Erro",
+          description: error.message || "Link de recuperação inválido.",
+          variant: "destructive",
+        });
+        navigate("/acesso");
+      }
+    };
+
+    checkRecoveryToken();
+  }, [navigate, toast, supabase.auth]);
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -76,6 +96,20 @@ export default function ResetPassword() {
     }
   };
 
+  if (initializing) {
+    return (
+      <div className="container mx-auto flex items-center justify-center min-h-screen p-4">
+        <Card className="w-full max-w-md">
+          <CardContent className="p-6">
+            <div className="text-center">
+              <p>Verificando link de recuperação...</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto flex items-center justify-center min-h-screen p-4">
       <Card className="w-full max-w-md">
@@ -94,6 +128,7 @@ export default function ResetPassword() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Digite sua nova senha"
                 required
+                disabled={loading}
               />
             </div>
             <div className="space-y-2">
@@ -105,6 +140,7 @@ export default function ResetPassword() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Confirme sua nova senha"
                 required
+                disabled={loading}
               />
             </div>
             {error && <div className="text-red-500 text-sm">{error}</div>}
@@ -116,4 +152,6 @@ export default function ResetPassword() {
       </Card>
     </div>
   );
-}
+};
+
+export default ResetPassword;
