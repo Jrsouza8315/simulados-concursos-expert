@@ -12,15 +12,14 @@ import {
   CardTitle,
   CardFooter,
 } from "@/components/ui/card";
-import { useAuth } from "@/contexts/AuthContext";
 import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { supabase } from "@/integrations/supabase/client"; // Importando o cliente Supabase do local correto
 
 const EsqueceuSenha: React.FC = () => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
-  const { supabase } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
