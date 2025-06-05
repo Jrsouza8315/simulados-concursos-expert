@@ -21,13 +21,25 @@ const EsqueceuSenha: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  // Função para obter o caminho base da aplicação
+  const getBasePath = () => {
+    // Em desenvolvimento, usa o caminho local
+    if (import.meta.env.DEV) {
+      return "";
+    }
+    // Em produção, usa o caminho do GitHub Pages
+    return "/simulados-concursos-expert";
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/simulados-concursos-expert/#/reset-password`,
+        redirectTo: `${
+          window.location.origin
+        }${getBasePath()}/#/reset-password`,
       });
 
       if (error) throw error;
@@ -41,6 +53,7 @@ const EsqueceuSenha: React.FC = () => {
         navigate("/acesso");
       }, 3000);
     } catch (error: any) {
+      console.error("Erro ao resetar senha:", error);
       toast.error(
         error.message || "Não foi possível enviar o email de recuperação."
       );
@@ -50,7 +63,7 @@ const EsqueceuSenha: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-background">
       <Header />
       <main className="flex-grow pt-16">
         <div className="container mx-auto flex items-center justify-center min-h-[calc(100vh-200px)] p-4">
@@ -74,6 +87,7 @@ const EsqueceuSenha: React.FC = () => {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     disabled={loading}
+                    className="bg-background"
                   />
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>
