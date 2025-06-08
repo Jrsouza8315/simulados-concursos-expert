@@ -1,35 +1,52 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { toast } from "sonner";
-import { Eye, EyeOff, Facebook, Mail } from 'lucide-react';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
-import { useAuth } from '@/contexts/AuthContext';
-import { useEffect } from 'react';
+import { Eye, EyeOff, Facebook, Mail } from "lucide-react";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import { useAuth } from "@/contexts/AuthContext";
+import { useEffect } from "react";
 
 // Esquema de validação para o login
 const loginSchema = z.object({
-  email: z.string().email({ message: 'Email inválido' }),
-  senha: z.string().min(6, { message: 'A senha deve ter pelo menos 6 caracteres' }),
+  email: z.string().email({ message: "Email inválido" }),
+  senha: z
+    .string()
+    .min(6, { message: "A senha deve ter pelo menos 6 caracteres" }),
 });
 
 // Esquema de validação para o cadastro
-const cadastroSchema = z.object({
-  nome: z.string().min(3, { message: 'O nome deve ter pelo menos 3 caracteres' }),
-  email: z.string().email({ message: 'Email inválido' }),
-  senha: z.string().min(6, { message: 'A senha deve ter pelo menos 6 caracteres' }),
-  confirmarSenha: z.string().min(6, { message: 'A senha deve ter pelo menos 6 caracteres' }),
-}).refine((data) => data.senha === data.confirmarSenha, {
-  message: "As senhas não coincidem",
-  path: ["confirmarSenha"],
-});
+const cadastroSchema = z
+  .object({
+    nome: z
+      .string()
+      .min(3, { message: "O nome deve ter pelo menos 3 caracteres" }),
+    email: z.string().email({ message: "Email inválido" }),
+    senha: z
+      .string()
+      .min(6, { message: "A senha deve ter pelo menos 6 caracteres" }),
+    confirmarSenha: z
+      .string()
+      .min(6, { message: "A senha deve ter pelo menos 6 caracteres" }),
+  })
+  .refine((data) => data.senha === data.confirmarSenha, {
+    message: "As senhas não coincidem",
+    path: ["confirmarSenha"],
+  });
 
 const Acesso = () => {
   const navigate = useNavigate();
@@ -43,17 +60,17 @@ const Acesso = () => {
   useEffect(() => {
     if (user && userProfile) {
       switch (userProfile.role) {
-        case 'admin':
-          navigate('/admin');
+        case "admin":
+          navigate("/admin");
           break;
-        case 'assinante':
-          navigate('/dashboard');
+        case "assinante":
+          navigate("/dashboard");
           break;
-        case 'visitante':
-          navigate('/visitante');
+        case "visitante":
+          navigate("/visitante");
           break;
         default:
-          navigate('/');
+          navigate("/");
       }
     }
   }, [user, userProfile, navigate]);
@@ -62,8 +79,8 @@ const Acesso = () => {
   const loginForm = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: '',
-      senha: '',
+      email: "",
+      senha: "",
     },
   });
 
@@ -71,32 +88,38 @@ const Acesso = () => {
   const cadastroForm = useForm({
     resolver: zodResolver(cadastroSchema),
     defaultValues: {
-      nome: '',
-      email: '',
-      senha: '',
-      confirmarSenha: '',
+      nome: "",
+      email: "",
+      senha: "",
+      confirmarSenha: "",
     },
   });
 
   const onLoginSubmit = async (values: z.infer<typeof loginSchema>) => {
     try {
       await signIn(values.email, values.senha);
-      toast.success('Login realizado com sucesso!');
+      toast.success("Login realizado com sucesso!");
     } catch (error: any) {
-      console.error('Login error:', error);
-      toast.error(error.message || 'Erro ao fazer login. Verifique suas credenciais.');
+      console.error("Login error:", error);
+      toast.error(
+        error.message || "Erro ao fazer login. Verifique suas credenciais."
+      );
     }
   };
 
   const onCadastroSubmit = async (values: z.infer<typeof cadastroSchema>) => {
     try {
       await signUp(values.email, values.senha);
-      toast.success('Cadastro realizado com sucesso! Verifique seu email para confirmar a conta.');
+      toast.success(
+        "Cadastro realizado com sucesso! Verifique seu email para confirmar a conta."
+      );
       setTabAtiva("login");
       cadastroForm.reset();
     } catch (error: any) {
-      console.error('Signup error:', error);
-      toast.error(error.message || 'Erro ao realizar cadastro. Tente novamente.');
+      console.error("Signup error:", error);
+      toast.error(
+        error.message || "Erro ao realizar cadastro. Tente novamente."
+      );
     }
   };
 
@@ -119,11 +142,16 @@ const Acesso = () => {
               <div className="space-y-6">
                 <div className="text-center mb-6">
                   <h1 className="text-2xl font-bold">Bem-vindo de volta</h1>
-                  <p className="text-gray-500">Acesse sua conta para continuar</p>
+                  <p className="text-gray-500">
+                    Acesse sua conta para continuar
+                  </p>
                 </div>
 
                 <Form {...loginForm}>
-                  <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
+                  <form
+                    onSubmit={loginForm.handleSubmit(onLoginSubmit)}
+                    className="space-y-4"
+                  >
                     <FormField
                       control={loginForm.control}
                       name="email"
@@ -131,10 +159,10 @@ const Acesso = () => {
                         <FormItem>
                           <FormLabel>Email</FormLabel>
                           <FormControl>
-                            <Input 
-                              placeholder="seu@email.com" 
-                              type="email" 
-                              {...field} 
+                            <Input
+                              placeholder="seu@email.com"
+                              type="email"
+                              {...field}
                             />
                           </FormControl>
                           <FormMessage />
@@ -150,10 +178,10 @@ const Acesso = () => {
                           <FormLabel>Senha</FormLabel>
                           <FormControl>
                             <div className="relative">
-                              <Input 
-                                placeholder="••••••••" 
-                                type={mostrarSenha ? "text" : "password"} 
-                                {...field} 
+                              <Input
+                                placeholder="••••••••"
+                                type={mostrarSenha ? "text" : "password"}
+                                {...field}
                               />
                               <Button
                                 type="button"
@@ -162,36 +190,46 @@ const Acesso = () => {
                                 onClick={() => setMostrarSenha(!mostrarSenha)}
                                 className="absolute right-0 top-0 h-full px-3"
                               >
-                                {mostrarSenha ? <EyeOff size={16} /> : <Eye size={16} />}
+                                {mostrarSenha ? (
+                                  <EyeOff size={16} />
+                                ) : (
+                                  <Eye size={16} />
+                                )}
                               </Button>
                             </div>
                           </FormControl>
                           <div className="flex justify-end">
-                            <a 
-                              href="#" 
+                            <Link
+                              to="/esqueceu-senha"
                               className="text-sm text-primary hover:underline"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                navigate("/esqueceu-senha");
+                              }}
                             >
                               Esqueceu a senha?
-                            </a>
+                            </Link>
                           </div>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                    
-                    <Button 
-                      type="submit" 
+
+                    <Button
+                      type="submit"
                       className="w-full bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700"
                       disabled={loginForm.formState.isSubmitting}
                     >
-                      {loginForm.formState.isSubmitting ? 'Entrando...' : 'Entrar'}
+                      {loginForm.formState.isSubmitting
+                        ? "Entrando..."
+                        : "Entrar"}
                     </Button>
                   </form>
                 </Form>
 
                 <div className="text-center mt-4">
                   <p className="text-sm text-gray-600">
-                    Ainda não tem uma conta?{' '}
+                    Ainda não tem uma conta?{" "}
                     <button
                       type="button"
                       onClick={() => setTabAtiva("cadastro")}
@@ -207,16 +245,24 @@ const Acesso = () => {
                     <span className="w-full border-t"></span>
                   </div>
                   <div className="relative flex justify-center text-sm">
-                    <span className="px-2 bg-white text-gray-500">ou continue com</span>
+                    <span className="px-2 bg-white text-gray-500">
+                      ou continue com
+                    </span>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <Button variant="outline" className="flex items-center justify-center gap-2">
+                  <Button
+                    variant="outline"
+                    className="flex items-center justify-center gap-2"
+                  >
                     <Facebook size={20} />
                     Facebook
                   </Button>
-                  <Button variant="outline" className="flex items-center justify-center gap-2">
+                  <Button
+                    variant="outline"
+                    className="flex items-center justify-center gap-2"
+                  >
                     <Mail size={20} />
                     Google
                   </Button>
@@ -228,11 +274,16 @@ const Acesso = () => {
               <div className="space-y-6">
                 <div className="text-center mb-6">
                   <h1 className="text-2xl font-bold">Criar nova conta</h1>
-                  <p className="text-gray-500">Registre-se para começar sua jornada de estudos</p>
+                  <p className="text-gray-500">
+                    Registre-se para começar sua jornada de estudos
+                  </p>
                 </div>
 
                 <Form {...cadastroForm}>
-                  <form onSubmit={cadastroForm.handleSubmit(onCadastroSubmit)} className="space-y-4">
+                  <form
+                    onSubmit={cadastroForm.handleSubmit(onCadastroSubmit)}
+                    className="space-y-4"
+                  >
                     <FormField
                       control={cadastroForm.control}
                       name="nome"
@@ -254,7 +305,11 @@ const Acesso = () => {
                         <FormItem>
                           <FormLabel>Email</FormLabel>
                           <FormControl>
-                            <Input placeholder="seu@email.com" type="email" {...field} />
+                            <Input
+                              placeholder="seu@email.com"
+                              type="email"
+                              {...field}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -269,19 +324,27 @@ const Acesso = () => {
                           <FormLabel>Senha</FormLabel>
                           <FormControl>
                             <div className="relative">
-                              <Input 
-                                placeholder="••••••••" 
-                                type={mostrarSenhaCadastro ? "text" : "password"} 
-                                {...field} 
+                              <Input
+                                placeholder="••••••••"
+                                type={
+                                  mostrarSenhaCadastro ? "text" : "password"
+                                }
+                                {...field}
                               />
                               <Button
                                 type="button"
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => setMostrarSenhaCadastro(!mostrarSenhaCadastro)}
+                                onClick={() =>
+                                  setMostrarSenhaCadastro(!mostrarSenhaCadastro)
+                                }
                                 className="absolute right-0 top-0 h-full px-3"
                               >
-                                {mostrarSenhaCadastro ? <EyeOff size={16} /> : <Eye size={16} />}
+                                {mostrarSenhaCadastro ? (
+                                  <EyeOff size={16} />
+                                ) : (
+                                  <Eye size={16} />
+                                )}
                               </Button>
                             </div>
                           </FormControl>
@@ -298,19 +361,29 @@ const Acesso = () => {
                           <FormLabel>Confirmar senha</FormLabel>
                           <FormControl>
                             <div className="relative">
-                              <Input 
-                                placeholder="••••••••" 
-                                type={mostrarConfirmarSenha ? "text" : "password"} 
-                                {...field} 
+                              <Input
+                                placeholder="••••••••"
+                                type={
+                                  mostrarConfirmarSenha ? "text" : "password"
+                                }
+                                {...field}
                               />
                               <Button
                                 type="button"
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => setMostrarConfirmarSenha(!mostrarConfirmarSenha)}
+                                onClick={() =>
+                                  setMostrarConfirmarSenha(
+                                    !mostrarConfirmarSenha
+                                  )
+                                }
                                 className="absolute right-0 top-0 h-full px-3"
                               >
-                                {mostrarConfirmarSenha ? <EyeOff size={16} /> : <Eye size={16} />}
+                                {mostrarConfirmarSenha ? (
+                                  <EyeOff size={16} />
+                                ) : (
+                                  <Eye size={16} />
+                                )}
                               </Button>
                             </div>
                           </FormControl>
@@ -318,20 +391,22 @@ const Acesso = () => {
                         </FormItem>
                       )}
                     />
-                    
-                    <Button 
-                      type="submit" 
+
+                    <Button
+                      type="submit"
                       className="w-full bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700"
                       disabled={cadastroForm.formState.isSubmitting}
                     >
-                      {cadastroForm.formState.isSubmitting ? 'Cadastrando...' : 'Cadastrar'}
+                      {cadastroForm.formState.isSubmitting
+                        ? "Cadastrando..."
+                        : "Cadastrar"}
                     </Button>
                   </form>
                 </Form>
 
                 <div className="text-center mt-4">
                   <p className="text-sm text-gray-600">
-                    Já tem uma conta?{' '}
+                    Já tem uma conta?{" "}
                     <button
                       type="button"
                       onClick={() => setTabAtiva("login")}
@@ -347,16 +422,24 @@ const Acesso = () => {
                     <span className="w-full border-t"></span>
                   </div>
                   <div className="relative flex justify-center text-sm">
-                    <span className="px-2 bg-white text-gray-500">ou cadastre-se com</span>
+                    <span className="px-2 bg-white text-gray-500">
+                      ou cadastre-se com
+                    </span>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <Button variant="outline" className="flex items-center justify-center gap-2">
+                  <Button
+                    variant="outline"
+                    className="flex items-center justify-center gap-2"
+                  >
                     <Facebook size={20} />
                     Facebook
                   </Button>
-                  <Button variant="outline" className="flex items-center justify-center gap-2">
+                  <Button
+                    variant="outline"
+                    className="flex items-center justify-center gap-2"
+                  >
                     <Mail size={20} />
                     Google
                   </Button>

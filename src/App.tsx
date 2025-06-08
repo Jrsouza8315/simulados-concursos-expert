@@ -1,9 +1,11 @@
+import React from "react";
 import { Toaster } from "./components/ui/toaster";
 import { Toaster as Sonner } from "./components/ui/sonner";
 import { TooltipProvider } from "./components/ui/tooltip";
 import { ThemeProvider } from "./components/theme-provider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HashRouter as Router } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import { MainLayout } from "./components/layout/MainLayout";
@@ -14,6 +16,8 @@ import Concursos from "./pages/Concursos";
 import Apostilas from "./pages/Apostilas";
 import Planos from "./pages/Planos";
 import Acesso from "./pages/Acesso";
+import ResetPassword from "./pages/ResetPassword";
+import EsqueceuSenha from "./pages/EsqueceuSenha";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AssinanteDashboard from "./pages/assinante/AssinanteDashboard";
 import VisitanteDashboard from "./pages/visitante/VisitanteDashboard";
@@ -22,14 +26,14 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-const App = () => (
+const App: React.FC = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
       <TooltipProvider>
         <Toaster />
         <Sonner />
         <AuthProvider>
-          <BrowserRouter basename="/simulados-concursos-expert">
+          <Router>
             <MainLayout>
               <Routes>
                 <Route path="/" element={<Index />} />
@@ -37,6 +41,8 @@ const App = () => (
                 <Route path="/apostilas" element={<Apostilas />} />
                 <Route path="/planos" element={<Planos />} />
                 <Route path="/acesso" element={<Acesso />} />
+                <Route path="/esqueceu-senha" element={<EsqueceuSenha />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/unauthorized" element={<Unauthorized />} />
                 <Route path="/simulados" element={<Simulados />} />
 
@@ -77,7 +83,7 @@ const App = () => (
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </MainLayout>
-          </BrowserRouter>
+          </Router>
         </AuthProvider>
       </TooltipProvider>
     </ThemeProvider>
