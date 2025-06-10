@@ -27,5 +27,8 @@ export default defineConfig({
         },
       },
     },
+    assetsDir: "assets",
+    // Ensure proper MIME types
+    assetsInlineLimit: 0,
   },
 });
