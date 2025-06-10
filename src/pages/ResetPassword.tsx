@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "../components/ui/card";
-import { useAuth } from "../contexts/AuthContext";
+import { supabase } from "../integrations/supabase/client";
 import { AlertCircle, CheckCircle2 } from "lucide-react";
 
 const ResetPassword: React.FC = () => {
@@ -20,7 +20,6 @@ const ResetPassword: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [initializing, setInitializing] = useState(true);
   const [error, setError] = useState("");
-  const { supabase } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -51,16 +50,26 @@ const ResetPassword: React.FC = () => {
   useEffect(() => {
     const checkRecoveryToken = async () => {
       try {
+        // Get the hash fragment from the URL
         const hash = window.location.hash;
-        if (!hash || !hash.includes("type=recovery")) {
-          throw new Error("Link de recuperação inválido");
+        const accessToken = new URLSearchParams(hash.substring(1)).get(
+          "access_token"
+        );
+
+        if (!hash || !accessToken) {
+          throw new Error("Link de recuperação inválido ou expirado");
         }
 
+        // Set the access token in Supabase
         const {
           data: { session },
-          error,
-        } = await supabase.auth.getSession();
-        if (error || !session) {
+          error: sessionError,
+        } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: "",
+        });
+
+        if (sessionError || !session) {
           throw new Error("Sessão inválida ou expirada");
         }
 
@@ -77,7 +86,7 @@ const ResetPassword: React.FC = () => {
     };
 
     checkRecoveryToken();
-  }, [navigate, toast, supabase.auth]);
+  }, [navigate, toast]);
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -100,11 +109,11 @@ const ResetPassword: React.FC = () => {
 
     try {
       setLoading(true);
-      const { error } = await supabase.auth.updateUser({
+      const { error: updateError } = await supabase.auth.updateUser({
         password: password,
       });
 
-      if (error) throw error;
+      if (updateError) throw updateError;
 
       toast({
         title: "Senha atualizada",
@@ -116,10 +125,11 @@ const ResetPassword: React.FC = () => {
         navigate("/acesso");
       }, 2000);
     } catch (error: any) {
+      console.error("Erro ao atualizar senha:", error);
       setError(error.message);
       toast({
         title: "Erro",
-        description: error.message,
+        description: error.message || "Erro ao atualizar a senha.",
         variant: "destructive",
       });
     } finally {
