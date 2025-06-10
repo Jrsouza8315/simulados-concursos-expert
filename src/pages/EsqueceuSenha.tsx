@@ -28,7 +28,8 @@ const EsqueceuSenha: React.FC = () => {
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo:
-          "https://jrsouza8315.github.io/simulados-concursos-expert/#/reset-password",
+          window.location.origin +
+          "/simulados-concursos-expert/#/reset-password",
       });
 
       if (error) throw error;
