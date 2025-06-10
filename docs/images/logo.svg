@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="300" height="100" viewBox="0 0 300 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Phoenix/Bird Symbol -->
+  <g transform="translate(0, 10)">
+    <path d="M50 10C35 25 40 40 50 50C60 40 65 25 50 10Z" fill="#5b88a5"/>
+    <path d="M50 10C65 25 60 40 50 50C40 40 35 25 50 10Z" fill="#243a69"/>
+    <circle cx="50" cy="30" r="5" fill="#d4cdc5"/>
+  </g>
+  
+  <!-- PONTO Text -->
+  <text x="100" y="50" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="#243a69">
+    PONTO
+  </text>
+</svg> 
