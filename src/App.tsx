@@ -31,11 +31,20 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 const App: React.FC = () => {
-  // Função para extrair o token de acesso da URL
-  const getAccessTokenFromHash = () => {
+  // Função para verificar se devemos redirecionar para reset de senha
+  const shouldRedirectToReset = () => {
     const hash = window.location.hash;
     const params = new URLSearchParams(hash.replace("#", ""));
-    return params.get("access_token");
+
+    // Se tiver access_token, redireciona para reset
+    const accessToken = params.get("access_token");
+    if (accessToken) return true;
+
+    // Se tiver erro, também redireciona para reset (para mostrar mensagem apropriada)
+    const error = params.get("error");
+    if (error) return true;
+
+    return false;
   };
 
   return (
@@ -48,26 +57,24 @@ const App: React.FC = () => {
             <Router>
               <MainLayout>
                 <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/concursos" element={<Concursos />} />
-                  <Route path="/apostilas" element={<Apostilas />} />
-                  <Route path="/planos" element={<Planos />} />
-                  <Route path="/acesso" element={<Acesso />} />
-                  <Route path="/esqueceu-senha" element={<EsqueceuSenha />} />
-
-                  {/* Rota especial para redefinição de senha */}
+                  {/* Rota raiz com redirecionamento condicional */}
                   <Route
                     path="/"
                     element={
-                      getAccessTokenFromHash() ? (
+                      shouldRedirectToReset() ? (
                         <Navigate to="/reset-password" replace />
                       ) : (
                         <Index />
                       )
                     }
                   />
-                  <Route path="/reset-password" element={<ResetPassword />} />
 
+                  <Route path="/concursos" element={<Concursos />} />
+                  <Route path="/apostilas" element={<Apostilas />} />
+                  <Route path="/planos" element={<Planos />} />
+                  <Route path="/acesso" element={<Acesso />} />
+                  <Route path="/esqueceu-senha" element={<EsqueceuSenha />} />
+                  <Route path="/reset-password" element={<ResetPassword />} />
                   <Route path="/unauthorized" element={<Unauthorized />} />
                   <Route path="/simulados" element={<Simulados />} />
 
