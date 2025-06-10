@@ -55,7 +55,21 @@ const ResetPassword: React.FC = () => {
       try {
         // Verificar se há erro na URL
         const hash = window.location.hash;
+
+        // Se não houver hash ou se for apenas #/reset-password, redirecionar
+        if (!hash || hash === "#/reset-password") {
+          navigate("/esqueceu-senha");
+          return;
+        }
+
         const params = new URLSearchParams(hash.replace("#", ""));
+
+        // Se não houver parâmetros na URL, redirecionar
+        if (params.toString() === "/reset-password") {
+          navigate("/esqueceu-senha");
+          return;
+        }
+
         const error = params.get("error");
         const errorDescription = params.get("error_description");
 
@@ -75,7 +89,8 @@ const ResetPassword: React.FC = () => {
         // Se não há erro, tenta obter o token de acesso
         const accessToken = params.get("access_token");
         if (!accessToken) {
-          throw new Error("Link de recuperação inválido ou expirado");
+          navigate("/esqueceu-senha");
+          return;
         }
 
         // Set the access token in Supabase
