@@ -4,8 +4,12 @@ import { Toaster as Sonner } from "./components/ui/sonner";
 import { TooltipProvider } from "./components/ui/tooltip";
 import { ThemeProvider } from "./components/theme-provider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { HashRouter as Router } from "react-router-dom";
-import { Routes, Route } from "react-router-dom";
+import {
+  HashRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import { MainLayout } from "./components/layout/MainLayout";
@@ -26,68 +30,90 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-const App: React.FC = () => (
-  <QueryClientProvider client={queryClient}>
-    <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <AuthProvider>
-          <Router>
-            <MainLayout>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/concursos" element={<Concursos />} />
-                <Route path="/apostilas" element={<Apostilas />} />
-                <Route path="/planos" element={<Planos />} />
-                <Route path="/acesso" element={<Acesso />} />
-                <Route path="/esqueceu-senha" element={<EsqueceuSenha />} />
-                <Route path="/reset-password" element={<ResetPassword />} />
-                <Route path="/unauthorized" element={<Unauthorized />} />
-                <Route path="/simulados" element={<Simulados />} />
+const App: React.FC = () => {
+  // Função para extrair o token de acesso da URL
+  const getAccessTokenFromHash = () => {
+    const hash = window.location.hash;
+    const params = new URLSearchParams(hash.replace("#", ""));
+    return params.get("access_token");
+  };
 
-                {/* Protected Routes */}
-                <Route
-                  path="/admin"
-                  element={
-                    <ProtectedRoute
-                      requiredRole="admin"
-                      redirectTo="/unauthorized"
-                    >
-                      <AdminDashboard />
-                    </ProtectedRoute>
-                  }
-                />
+  return (
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <AuthProvider>
+            <Router>
+              <MainLayout>
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/concursos" element={<Concursos />} />
+                  <Route path="/apostilas" element={<Apostilas />} />
+                  <Route path="/planos" element={<Planos />} />
+                  <Route path="/acesso" element={<Acesso />} />
+                  <Route path="/esqueceu-senha" element={<EsqueceuSenha />} />
 
-                <Route
-                  path="/dashboard"
-                  element={
-                    <ProtectedRoute allowedRoles={["assinante", "admin"]}>
-                      <AssinanteDashboard />
-                    </ProtectedRoute>
-                  }
-                />
+                  {/* Rota especial para redefinição de senha */}
+                  <Route
+                    path="/"
+                    element={
+                      getAccessTokenFromHash() ? (
+                        <Navigate to="/reset-password" replace />
+                      ) : (
+                        <Index />
+                      )
+                    }
+                  />
+                  <Route path="/reset-password" element={<ResetPassword />} />
 
-                <Route
-                  path="/visitante"
-                  element={
-                    <ProtectedRoute
-                      allowedRoles={["visitante", "assinante", "admin"]}
-                    >
-                      <VisitanteDashboard />
-                    </ProtectedRoute>
-                  }
-                />
+                  <Route path="/unauthorized" element={<Unauthorized />} />
+                  <Route path="/simulados" element={<Simulados />} />
 
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </MainLayout>
-          </Router>
-        </AuthProvider>
-      </TooltipProvider>
-    </ThemeProvider>
-  </QueryClientProvider>
-);
+                  {/* Protected Routes */}
+                  <Route
+                    path="/admin"
+                    element={
+                      <ProtectedRoute
+                        requiredRole="admin"
+                        redirectTo="/unauthorized"
+                      >
+                        <AdminDashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  <Route
+                    path="/dashboard"
+                    element={
+                      <ProtectedRoute allowedRoles={["assinante", "admin"]}>
+                        <AssinanteDashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  <Route
+                    path="/visitante"
+                    element={
+                      <ProtectedRoute
+                        allowedRoles={["visitante", "assinante", "admin"]}
+                      >
+                        <VisitanteDashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </MainLayout>
+            </Router>
+          </AuthProvider>
+        </TooltipProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;

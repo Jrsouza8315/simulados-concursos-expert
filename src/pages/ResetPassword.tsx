@@ -10,9 +10,11 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from "../components/ui/card";
 import { supabase } from "../integrations/supabase/client";
-import { AlertCircle, CheckCircle2 } from "lucide-react";
+import { AlertCircle, CheckCircle2, AlertTriangle } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const ResetPassword: React.FC = () => {
   const [password, setPassword] = useState("");
@@ -20,6 +22,7 @@ const ResetPassword: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [initializing, setInitializing] = useState(true);
   const [error, setError] = useState("");
+  const [linkExpired, setLinkExpired] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -50,13 +53,28 @@ const ResetPassword: React.FC = () => {
   useEffect(() => {
     const checkRecoveryToken = async () => {
       try {
-        // Get the hash fragment from the URL
+        // Verificar se há erro na URL
         const hash = window.location.hash;
-        const accessToken = new URLSearchParams(hash.substring(1)).get(
-          "access_token"
-        );
+        const params = new URLSearchParams(hash.replace("#", ""));
+        const error = params.get("error");
+        const errorDescription = params.get("error_description");
 
-        if (!hash || !accessToken) {
+        if (error) {
+          if (
+            error === "access_denied" &&
+            params.get("error_code") === "otp_expired"
+          ) {
+            setLinkExpired(true);
+            throw new Error(
+              "O link de recuperação expirou. Por favor, solicite um novo link."
+            );
+          }
+          throw new Error(errorDescription || "Link de recuperação inválido");
+        }
+
+        // Se não há erro, tenta obter o token de acesso
+        const accessToken = params.get("access_token");
+        if (!accessToken) {
           throw new Error("Link de recuperação inválido ou expirado");
         }
 
@@ -81,7 +99,8 @@ const ResetPassword: React.FC = () => {
           description: error.message || "Link de recuperação inválido.",
           variant: "destructive",
         });
-        navigate("/acesso");
+        setInitializing(false);
+        setLinkExpired(true);
       }
     };
 
@@ -136,6 +155,40 @@ const ResetPassword: React.FC = () => {
       setLoading(false);
     }
   };
+
+  if (linkExpired) {
+    return (
+      <div className="container mx-auto flex items-center justify-center min-h-screen p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <div className="flex items-center justify-center mb-4">
+              <AlertTriangle className="h-12 w-12 text-yellow-500" />
+            </div>
+            <CardTitle className="text-center">Link Expirado</CardTitle>
+            <CardDescription className="text-center">
+              O link de recuperação de senha expirou ou é inválido.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="text-center">
+            <p className="mb-4">
+              Por favor, solicite um novo link de recuperação de senha.
+            </p>
+            <Link to="/esqueceu-senha">
+              <Button className="w-full">Solicitar Novo Link</Button>
+            </Link>
+          </CardContent>
+          <CardFooter className="flex justify-center">
+            <Link
+              to="/acesso"
+              className="text-sm text-muted-foreground hover:text-primary"
+            >
+              Voltar para o login
+            </Link>
+          </CardFooter>
+        </Card>
+      </div>
+    );
+  }
 
   if (initializing) {
     return (
