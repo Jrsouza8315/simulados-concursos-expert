@@ -37,13 +37,13 @@ jobs:
 
       - name: Create .nojekyll file
         run: |
-          touch dist/.nojekyll
-          cp CNAME dist/ || true
+          touch docs/.nojekyll
+          cp CNAME docs/ || true
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./dist
+          path: ./docs
 
   deploy:
     environment:
