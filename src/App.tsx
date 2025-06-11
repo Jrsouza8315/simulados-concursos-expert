@@ -45,8 +45,22 @@ const App: React.FC = () => {
           <Sonner />
           <AuthProvider>
             <Router>
-              <MainLayout>
-                <Routes>
+              <Routes>
+                {/* Rota admin fora do MainLayout */}
+                <Route
+                  path="/admin/*"
+                  element={
+                    <ProtectedRoute
+                      requiredRole="admin"
+                      redirectTo="/unauthorized"
+                    >
+                      <AdminDashboard />
+                    </ProtectedRoute>
+                  }
+                />
+
+                {/* Todas as outras rotas dentro do MainLayout */}
+                <Route element={<MainLayout>}>
                   {/* Rota raiz com redirecionamento condicional */}
                   <Route
                     path="/"
@@ -70,18 +84,6 @@ const App: React.FC = () => {
 
                   {/* Protected Routes */}
                   <Route
-                    path="/admin"
-                    element={
-                      <ProtectedRoute
-                        requiredRole="admin"
-                        redirectTo="/unauthorized"
-                      >
-                        <AdminDashboard />
-                      </ProtectedRoute>
-                    }
-                  />
-
-                  <Route
                     path="/dashboard"
                     element={
                       <ProtectedRoute allowedRoles={["assinante", "admin"]}>
@@ -103,8 +105,8 @@ const App: React.FC = () => {
 
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
-                </Routes>
-              </MainLayout>
+                </Route>
+              </Routes>
             </Router>
           </AuthProvider>
         </TooltipProvider>

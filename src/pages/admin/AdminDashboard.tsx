@@ -1,46 +1,37 @@
 import React, { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../../components/ui/card";
 import {
   Users,
   BookOpen,
   BarChart3,
-  Settings,
-  Plus,
   FileText,
   BookOpenCheck,
 } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
-import Header from "@/components/Header";
-import { supabase } from "@/integrations/supabase/client";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAuth } from "../../contexts/AuthContext";
+import { supabase } from "../../integrations/supabase/client";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { useToast } from "@/components/ui/use-toast";
-import { AdminDashboardStats } from "@/types/admin";
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../../components/ui/tabs";
+import { AdminDashboardStats } from "../../types/admin";
 import { UserManagement } from "./components/UserManagement";
 import { QuestionManagement } from "./components/QuestionManagement";
 import { ConcursoManagement } from "./components/ConcursoManagement";
 import { ApostilaManagement } from "./components/ApostilaManagement";
+import { Button } from "../../components/ui/button";
+import { useNavigate } from "react-router-dom";
+import { Badge } from "../../components/ui/badge";
 
 const AdminDashboard = () => {
-  const { userProfile } = useAuth();
+  const { userProfile, signOut } = useAuth();
+  const navigate = useNavigate();
   const [stats, setStats] = useState<AdminDashboardStats>({
     totalUsers: 0,
     activeSubscribers: 0,
@@ -52,16 +43,6 @@ const AdminDashboard = () => {
   });
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("dashboard");
-  const { toast } = useToast();
-
-  // Estados para o formulário de questões
-  const [questao, setQuestao] = useState({
-    enunciado: "",
-    alternativas: ["", "", "", "", ""],
-    resposta_correta: 0,
-    materia: "",
-    nivel: "facil",
-  });
 
   useEffect(() => {
     fetchStats();
@@ -115,50 +96,37 @@ const AdminDashboard = () => {
     }
   };
 
-  const updateUserRole = async (userId: string, newRole: string) => {
+  const handleSignOut = async () => {
     try {
-      const { error } = await supabase
-        .from("user_profiles")
-        .update({ role: newRole })
-        .eq("id", userId);
-
-      if (!error) {
-        fetchStats();
-      }
+      await signOut();
+      navigate("/acesso");
     } catch (error) {
-      console.error("Error updating user role:", error);
+      console.error("Error signing out:", error);
     }
-  };
-
-  const handleSalvarQuestao = () => {
-    // Implementar lógica de salvamento
-    toast({
-      title: "Questão salva com sucesso!",
-      description: "A questão foi adicionada ao banco de dados.",
-    });
-  };
-
-  const handleAlterarPermissao = (userId: number, novaRole: string) => {
-    // Implementar lógica de alteração de permissão
-    toast({
-      title: "Permissão alterada",
-      description: `Permissão do usuário alterada para ${novaRole}`,
-    });
   };
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
-      <div className="container mx-auto pt-20 px-4 pb-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-primary">
-            Dashboard Administrativo
-          </h1>
-          <p className="text-muted-foreground mt-2">
-            Bem-vindo, {userProfile?.email}
-          </p>
+      {/* Admin Header */}
+      <header className="border-b">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <h1 className="text-2xl font-bold text-primary">
+                Painel Administrativo
+              </h1>
+              <span className="text-sm text-muted-foreground">
+                {userProfile?.email}
+              </span>
+            </div>
+            <Button variant="outline" onClick={handleSignOut}>
+              Sair
+            </Button>
+          </div>
         </div>
+      </header>
 
+      <div className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="grid w-full grid-cols-5 mb-8">
             <TabsTrigger value="dashboard">Dashboard</TabsTrigger>

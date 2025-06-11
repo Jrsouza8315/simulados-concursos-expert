@@ -1,6 +1,7 @@
-import { ReactNode } from "react";
+import React, { ReactNode } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
+import { Loader2 } from "lucide-react";
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -9,16 +10,20 @@ interface ProtectedRouteProps {
   redirectTo?: string;
 }
 
-const ProtectedRoute = ({
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
   requiredRole,
   allowedRoles,
   redirectTo = "/unauthorized",
-}: ProtectedRouteProps) => {
+}) => {
   const { user, userProfile, loading } = useAuth();
 
   if (loading) {
-    return <div>Carregando...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
   }
 
   if (!user) {
@@ -26,11 +31,22 @@ const ProtectedRoute = ({
   }
 
   if (!userProfile) {
-    return <div>Carregando perfil...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
   }
 
-  if (requiredRole && userProfile.role !== requiredRole) {
-    return <Navigate to={redirectTo} replace />;
+  if (requiredRole) {
+    if (requiredRole === "admin" && userProfile.role !== "admin") {
+      console.log("Tentativa de acesso não autorizado à área administrativa");
+      return <Navigate to={redirectTo} replace />;
+    }
+
+    if (userProfile.role !== requiredRole) {
+      return <Navigate to={redirectTo} replace />;
+    }
   }
 
   if (allowedRoles && !allowedRoles.includes(userProfile.role)) {

@@ -55,23 +55,20 @@ const Acesso = () => {
   const [mostrarSenhaCadastro, setMostrarSenhaCadastro] = useState(false);
   const [mostrarConfirmarSenha, setMostrarConfirmarSenha] = useState(false);
   const [tabAtiva, setTabAtiva] = useState("login");
+  const [loading, setLoading] = useState(false);
 
   // Redirect authenticated users to their dashboard
   useEffect(() => {
     if (user && userProfile) {
-      switch (userProfile.role) {
-        case "admin":
-          navigate("/admin");
-          break;
-        case "assinante":
-          navigate("/dashboard");
-          break;
-        case "visitante":
-          navigate("/visitante");
-          break;
-        default:
-          navigate("/");
-      }
+      // Redirecionar para a página apropriada com base no papel do usuário
+      const redirectMap = {
+        admin: "/admin",
+        assinante: "/dashboard",
+        visitante: "/visitante",
+      };
+
+      const redirectTo = redirectMap[userProfile.role] || "/";
+      navigate(redirectTo);
     }
   }, [user, userProfile, navigate]);
 
@@ -97,18 +94,29 @@ const Acesso = () => {
 
   const onLoginSubmit = async (values: z.infer<typeof loginSchema>) => {
     try {
+      setLoading(true);
       await signIn(values.email, values.senha);
-      toast.success("Login realizado com sucesso!");
+      // O redirecionamento será feito pelo useEffect quando o userProfile for carregado
     } catch (error: any) {
       console.error("Login error:", error);
-      toast.error(
-        error.message || "Erro ao fazer login. Verifique suas credenciais."
-      );
+      let errorMessage = "Erro ao fazer login. Verifique suas credenciais.";
+
+      // Mensagens de erro mais específicas
+      if (error.message.includes("Invalid login credentials")) {
+        errorMessage = "Email ou senha incorretos.";
+      } else if (error.message.includes("Email not confirmed")) {
+        errorMessage = "Por favor, confirme seu email antes de fazer login.";
+      }
+
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
 
   const onCadastroSubmit = async (values: z.infer<typeof cadastroSchema>) => {
     try {
+      setLoading(true);
       await signUp(values.email, values.senha);
       toast.success(
         "Cadastro realizado com sucesso! Verifique seu email para confirmar a conta."
@@ -117,9 +125,16 @@ const Acesso = () => {
       cadastroForm.reset();
     } catch (error: any) {
       console.error("Signup error:", error);
-      toast.error(
-        error.message || "Erro ao realizar cadastro. Tente novamente."
-      );
+      let errorMessage = "Erro ao realizar cadastro. Tente novamente.";
+
+      // Mensagens de erro mais específicas
+      if (error.message.includes("User already registered")) {
+        errorMessage = "Este email já está cadastrado.";
+      }
+
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -162,6 +177,7 @@ const Acesso = () => {
                             <Input
                               placeholder="seu@email.com"
                               type="email"
+                              disabled={loading}
                               {...field}
                             />
                           </FormControl>
@@ -181,6 +197,7 @@ const Acesso = () => {
                               <Input
                                 placeholder="••••••••"
                                 type={mostrarSenha ? "text" : "password"}
+                                disabled={loading}
                                 {...field}
                               />
                               <Button
@@ -189,6 +206,7 @@ const Acesso = () => {
                                 size="sm"
                                 onClick={() => setMostrarSenha(!mostrarSenha)}
                                 className="absolute right-0 top-0 h-full px-3"
+                                disabled={loading}
                               >
                                 {mostrarSenha ? (
                                   <EyeOff size={16} />
@@ -198,31 +216,22 @@ const Acesso = () => {
                               </Button>
                             </div>
                           </FormControl>
-                          <div className="flex justify-end">
-                            <Link
-                              to="/esqueceu-senha"
-                              className="text-sm text-primary hover:underline"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                navigate("/esqueceu-senha");
-                              }}
-                            >
-                              Esqueceu a senha?
-                            </Link>
-                          </div>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
 
-                    <Button
-                      type="submit"
-                      className="w-full bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700"
-                      disabled={loginForm.formState.isSubmitting}
-                    >
-                      {loginForm.formState.isSubmitting
-                        ? "Entrando..."
-                        : "Entrar"}
+                    <div className="flex justify-between items-center">
+                      <Link
+                        to="/esqueceu-senha"
+                        className="text-sm text-primary hover:underline"
+                      >
+                        Esqueceu sua senha?
+                      </Link>
+                    </div>
+
+                    <Button type="submit" className="w-full" disabled={loading}>
+                      {loading ? "Entrando..." : "Entrar"}
                     </Button>
                   </form>
                 </Form>
