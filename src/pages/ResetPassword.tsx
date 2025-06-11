@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "../components/ui/use-toast";
+import { toast } from "sonner";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
@@ -24,7 +24,6 @@ const ResetPassword: React.FC = () => {
   const [error, setError] = useState("");
   const [linkExpired, setLinkExpired] = useState(false);
   const navigate = useNavigate();
-  const { toast } = useToast();
 
   // Password requirements state
   const [requirements, setRequirements] = useState({
@@ -55,40 +54,26 @@ const ResetPassword: React.FC = () => {
       try {
         // Verificar se há erro na URL
         const hash = window.location.hash;
+        const accessToken = hash.split("access_token=")?.[1]?.split("&")?.[0];
 
-        // Se não houver hash ou se for apenas #/reset-password, redirecionar
-        if (!hash || hash === "#/reset-password") {
-          navigate("/esqueceu-senha");
-          return;
-        }
+        // Se não houver token, verificar se há erro
+        if (!accessToken) {
+          const errorCode = hash.split("error_code=")?.[1]?.split("&")?.[0];
+          const errorDescription = hash
+            .split("error_description=")?.[1]
+            ?.split("&")?.[0];
 
-        const params = new URLSearchParams(hash.replace("#", ""));
-
-        // Se não houver parâmetros na URL, redirecionar
-        if (params.toString() === "/reset-password") {
-          navigate("/esqueceu-senha");
-          return;
-        }
-
-        const error = params.get("error");
-        const errorDescription = params.get("error_description");
-
-        if (error) {
-          if (
-            error === "access_denied" &&
-            params.get("error_code") === "otp_expired"
-          ) {
+          if (errorCode === "401") {
             setLinkExpired(true);
             throw new Error(
               "O link de recuperação expirou. Por favor, solicite um novo link."
             );
           }
-          throw new Error(errorDescription || "Link de recuperação inválido");
-        }
 
-        // Se não há erro, tenta obter o token de acesso
-        const accessToken = params.get("access_token");
-        if (!accessToken) {
+          if (errorDescription) {
+            throw new Error(decodeURIComponent(errorDescription));
+          }
+
           navigate("/esqueceu-senha");
           return;
         }
@@ -109,18 +94,14 @@ const ResetPassword: React.FC = () => {
         setInitializing(false);
       } catch (error: any) {
         console.error("Erro na verificação:", error);
-        toast({
-          title: "Erro",
-          description: error.message || "Link de recuperação inválido.",
-          variant: "destructive",
-        });
+        toast.error(error.message || "Link de recuperação inválido.");
         setInitializing(false);
         setLinkExpired(true);
       }
     };
 
     checkRecoveryToken();
-  }, [navigate, toast]);
+  }, [navigate]);
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -149,10 +130,7 @@ const ResetPassword: React.FC = () => {
 
       if (updateError) throw updateError;
 
-      toast({
-        title: "Senha atualizada",
-        description: "Sua senha foi atualizada com sucesso!",
-      });
+      toast.success("Senha atualizada com sucesso!");
 
       // Redirecionar para a página de login após 2 segundos
       setTimeout(() => {
@@ -161,11 +139,7 @@ const ResetPassword: React.FC = () => {
     } catch (error: any) {
       console.error("Erro ao atualizar senha:", error);
       setError(error.message);
-      toast({
-        title: "Erro",
-        description: error.message || "Erro ao atualizar a senha.",
-        variant: "destructive",
-      });
+      toast.error(error.message || "Erro ao atualizar a senha.");
     } finally {
       setLoading(false);
     }

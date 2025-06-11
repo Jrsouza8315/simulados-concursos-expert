@@ -34,17 +34,7 @@ const App: React.FC = () => {
   // Função para verificar se devemos redirecionar para reset de senha
   const shouldRedirectToReset = () => {
     const hash = window.location.hash;
-    const params = new URLSearchParams(hash.replace("#", ""));
-
-    // Se tiver access_token, redireciona para reset
-    const accessToken = params.get("access_token");
-    if (accessToken) return true;
-
-    // Se tiver erro, também redireciona para reset (para mostrar mensagem apropriada)
-    const error = params.get("error");
-    if (error) return true;
-
-    return false;
+    return hash.includes("access_token=") || hash.includes("error_code=");
   };
 
   return (
