@@ -95,8 +95,22 @@ const Acesso = () => {
   const onLoginSubmit = async (values: z.infer<typeof loginSchema>) => {
     try {
       setLoading(true);
-      await signIn(values.email, values.senha);
-      // O redirecionamento será feito pelo useEffect quando o userProfile for carregado
+      const { user } = await signIn(values.email, values.senha);
+
+      // Adicionar log para debug
+      console.log("Login bem sucedido:", {
+        user,
+        userProfile,
+        email: values.email,
+      });
+
+      // Se for o email do admin, redirecionar imediatamente
+      if (values.email === "hbrcomercialssa@gmail.com") {
+        navigate("/admin");
+        return;
+      }
+
+      // Para outros usuários, o redirecionamento será feito pelo useEffect
     } catch (error: any) {
       console.error("Login error:", error);
       let errorMessage = "Erro ao fazer login. Verifique suas credenciais.";

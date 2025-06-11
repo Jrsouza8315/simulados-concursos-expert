@@ -1,25 +1,89 @@
+# Dependências
+node_modules/
+/.pnp
+.pnp.js
+
+# Arquivos de build
+/build
+/dist
+/.next/
+/out/
+
+# Variáveis de ambiente e configurações
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env*.local
+*.env
+.env.*
+
+# Chaves e credenciais
+*.pem
+*.key
+*.cert
+*.crt
+*.csr
+*.p12
+*.pfx
+*.keystore
+supabase/admin-setup.sql
+supabase/manual_admin_setup.sql
+supabase/credentials.json
+supabase/config.json
+
 # Logs
 logs
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
+# Cache e arquivos temporários
+.cache/
+.temp/
+.tmp/
 .DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Arquivos de IDE e editores
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
+.project
+.classpath
+.settings/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
-bun.lockb
+
+# Arquivos de teste e cobertura
+/coverage
+.nyc_output
+*.lcov
+
+# Arquivos de debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Arquivos de backup
+*.bak
+*.backup
+*~
+
+# Arquivos específicos do projeto
+/supabase/secrets/
+/config/secrets.json
+/src/config/private/
+*.private.tsx
+*.private.ts
+*.private.js
+private.config.js
+admin.config.js

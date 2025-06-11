@@ -41,12 +41,23 @@ const AdminDashboard = () => {
     totalApostilas: 0,
     recentActivity: [],
   });
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("dashboard");
 
   useEffect(() => {
+    // Verificar se o usuário é admin
+    if (userProfile?.email !== "hbrcomercialssa@gmail.com") {
+      console.log(
+        "Usuário não autorizado tentando acessar o painel admin:",
+        userProfile
+      );
+      navigate("/unauthorized");
+      return;
+    }
+
+    // Se chegou aqui, é admin, então carrega os dados
     fetchStats();
-  }, []);
+  }, [userProfile, navigate]);
 
   const fetchStats = async () => {
     try {

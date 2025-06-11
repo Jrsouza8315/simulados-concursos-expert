@@ -27,54 +27,58 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
-  useEffect(() => {
-    // Set up auth state listener
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Auth state changed:", event, session?.user?.email);
-      setSession(session);
-      setUser(session?.user ?? null);
-
-      if (session?.user) {
-        // Defer the profile fetch to avoid blocking auth state updates
-        setTimeout(() => {
-          fetchUserProfile(session.user.id);
-        }, 0);
-      } else {
-        setUserProfile(null);
-      }
-      setLoading(false);
-    });
-
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchUserProfile(session.user.id);
-      }
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
   const fetchUserProfile = async (userId: string) => {
     try {
+      console.log("Fetching user profile for:", userId);
       const { data, error } = await supabase
         .from("user_profiles")
         .select("*")
         .eq("id", userId)
         .single();
 
-      if (error && error.code !== "PGRST116") {
+      if (error) {
         console.error("Error fetching user profile:", error);
+        // Se o perfil não existir, criar um perfil padrão
+        if (error.code === "PGRST116") {
+          const { data: userData } = await supabase.auth.getUser();
+          if (userData.user) {
+            const newProfile = {
+              id: userId,
+              email: userData.user.email || "",
+              role: "visitante" as UserRole,
+              subscription_active: false,
+            };
+
+            const { error: insertError } = await supabase
+              .from("user_profiles")
+              .insert([newProfile]);
+
+            if (!insertError) {
+              setUserProfile(newProfile);
+              return;
+            }
+          }
+        }
         return;
       }
 
       if (data) {
-        // Type cast the role to ensure it matches our UserRole type
+        console.log("User profile loaded:", data);
+        // Verificar se é o email do admin
+        if (data.email === "hbrcomercialssa@gmail.com") {
+          // Atualizar para admin se ainda não for
+          if (data.role !== "admin") {
+            const { error: updateError } = await supabase
+              .from("user_profiles")
+              .update({ role: "admin" })
+              .eq("id", userId);
+
+            if (!updateError) {
+              data.role = "admin";
+            }
+          }
+        }
+
         const profile: UserProfile = {
           id: data.id,
           email: data.email,
@@ -88,16 +92,54 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const signIn = async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    if (error) throw error;
+  useEffect(() => {
+    // Set up auth state listener
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("Auth state changed:", event, session?.user?.email);
+      setSession(session);
+      setUser(session?.user ?? null);
 
-    // Fetch user profile immediately after sign in
-    if (data.user) {
-      await fetchUserProfile(data.user.id);
+      if (session?.user) {
+        await fetchUserProfile(session.user.id);
+      } else {
+        setUserProfile(null);
+      }
+      setLoading(false);
+    });
+
+    // Get initial session
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        await fetchUserProfile(session.user.id);
+      }
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const signIn = async (email: string, password: string) => {
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
+      // Fetch user profile immediately after sign in
+      if (data.user) {
+        await fetchUserProfile(data.user.id);
+      }
+
+      return data;
+    } catch (error) {
+      console.error("Error in signIn:", error);
+      throw error;
     }
   };
 
@@ -106,16 +148,40 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     password: string,
     role: UserRole = "visitante"
   ) => {
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
-    if (error) throw error;
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
+      if (data.user) {
+        const profile = {
+          id: data.user.id,
+          email: data.user.email || "",
+          role,
+          subscription_active: false,
+        };
+
+        const { error: profileError } = await supabase
+          .from("user_profiles")
+          .insert([profile]);
+
+        if (profileError) throw profileError;
+      }
+
+      return data;
+    } catch (error) {
+      console.error("Error in signUp:", error);
+      throw error;
+    }
   };
 
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
+    setUserProfile(null);
   };
 
   const resetPassword = async (email: string) => {
