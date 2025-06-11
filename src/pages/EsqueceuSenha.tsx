@@ -29,16 +29,19 @@ const EsqueceuSenha: React.FC = () => {
       // Construir a URL de redirecionamento usando hash routing
       const baseUrl = window.location.origin;
       const path = "/simulados-concursos-expert";
-      const hash = "#/reset-password";
+      const resetPath = "#/reset-password";
 
       // Garantir que a URL está formatada corretamente
-      const redirectUrl = `${baseUrl}${path}${hash}`;
+      const redirectUrl = `${baseUrl}${path}${resetPath}`;
 
       console.log("Detalhes da URL de redirecionamento:", {
         baseUrl,
         path,
-        hash,
+        resetPath,
         fullUrl: redirectUrl,
+        currentUrl: window.location.href,
+        currentOrigin: window.location.origin,
+        currentPathname: window.location.pathname,
       });
 
       const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
@@ -69,9 +72,18 @@ const EsqueceuSenha: React.FC = () => {
       }, 3000);
     } catch (error: any) {
       console.error("Erro ao resetar senha:", error);
-      toast.error(
-        error.message || "Não foi possível enviar o email de recuperação."
-      );
+
+      // Melhorar a mensagem de erro para o usuário
+      let errorMessage = "Não foi possível enviar o email de recuperação.";
+      if (error.message?.includes("rate limit")) {
+        errorMessage =
+          "Muitas tentativas. Por favor, aguarde alguns minutos antes de tentar novamente.";
+      } else if (error.message?.includes("not found")) {
+        errorMessage =
+          "Email não encontrado. Verifique se digitou corretamente.";
+      }
+
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }

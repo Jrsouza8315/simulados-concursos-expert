@@ -59,7 +59,37 @@ const ResetPassword: React.FC = () => {
         const hash = window.location.hash;
         console.log("Hash original:", hash);
 
-        // Extrair o token usando regex para maior precisão
+        // Verificar primeiro se há erros na URL
+        const errorMatch = hash.match(/[#&?]error=([^&]+)/);
+        const errorCodeMatch = hash.match(/[#&?]error_code=([^&]+)/);
+        const errorDescriptionMatch = hash.match(
+          /[#&?]error_description=([^&]+)/
+        );
+
+        if (errorMatch || errorCodeMatch || errorDescriptionMatch) {
+          const error = errorMatch ? decodeURIComponent(errorMatch[1]) : null;
+          const errorCode = errorCodeMatch
+            ? decodeURIComponent(errorCodeMatch[1])
+            : null;
+          const errorDescription = errorDescriptionMatch
+            ? decodeURIComponent(errorDescriptionMatch[1])
+            : null;
+
+          console.log("Informações de erro encontradas:", {
+            error,
+            errorCode,
+            errorDescription,
+          });
+
+          setLinkExpired(true);
+          throw new Error(
+            errorDescription
+              ? decodeURIComponent(errorDescription)
+              : "O link de recuperação é inválido ou expirou."
+          );
+        }
+
+        // Se não há erros, procurar pelo token
         const tokenMatch = hash.match(/[#&?]access_token=([^&]+)/);
         const accessToken = tokenMatch ? tokenMatch[1] : null;
 
@@ -72,42 +102,14 @@ const ResetPassword: React.FC = () => {
             : "Não"
         );
 
-        // Se não houver token, verificar erros
         if (!accessToken) {
-          // Extrair informações de erro
-          const errorMatch = hash.match(/error=([^&]+)/);
-          const errorCodeMatch = hash.match(/error_code=([^&]+)/);
-          const errorDescriptionMatch = hash.match(/error_description=([^&]+)/);
-
-          const error = errorMatch ? decodeURIComponent(errorMatch[1]) : null;
-          const errorCode = errorCodeMatch
-            ? decodeURIComponent(errorCodeMatch[1])
-            : null;
-          const errorDescription = errorDescriptionMatch
-            ? decodeURIComponent(errorDescriptionMatch[1])
-            : null;
-
-          console.log("Informações de erro:", {
-            error,
-            errorCode,
-            errorDescription,
-            hasErrorInURL: hash.includes("error"),
-          });
-
-          if (error || errorCode || errorDescription) {
-            setLinkExpired(true);
-            throw new Error(
-              errorDescription || "O link de recuperação é inválido ou expirou."
-            );
-          }
-
-          console.log("Redirecionando - token não encontrado");
+          console.log("Token não encontrado na URL");
           navigate("/esqueceu-senha");
           return;
         }
 
         // Extrair outros parâmetros importantes
-        const refreshMatch = hash.match(/refresh_token=([^&]+)/);
+        const refreshMatch = hash.match(/[#&?]refresh_token=([^&]+)/);
         const refreshToken = refreshMatch ? refreshMatch[1] : "";
 
         // Tentar configurar a sessão com o token
@@ -189,6 +191,11 @@ const ResetPassword: React.FC = () => {
         toast.error(error.message || "Link de recuperação inválido.");
         setInitializing(false);
         setLinkExpired(true);
+
+        // Redirecionar para a página de recuperação após 3 segundos
+        setTimeout(() => {
+          navigate("/esqueceu-senha");
+        }, 3000);
       }
     };
 
