@@ -52,30 +52,57 @@ const ResetPassword: React.FC = () => {
   useEffect(() => {
     const checkRecoveryToken = async () => {
       try {
-        // Verificar se há erro na URL
+        // Log da URL completa para debug
+        console.log("URL completa:", window.location.href);
+
+        // Obter o hash e remover o prefixo da rota
         const hash = window.location.hash;
-        console.log("Hash da URL:", hash);
+        console.log("Hash original:", hash);
 
-        // Tentar extrair o token do hash
-        const params = new URLSearchParams(
-          hash.replace("#/reset-password#", "")
+        // Extrair o token usando regex para maior precisão
+        const tokenMatch = hash.match(/[#&?]access_token=([^&]+)/);
+        const accessToken = tokenMatch ? tokenMatch[1] : null;
+
+        console.log(
+          "Token encontrado:",
+          accessToken
+            ? "Sim (primeiros 10 caracteres: " +
+                accessToken.substring(0, 10) +
+                "...)"
+            : "Não"
         );
-        const accessToken = params.get("access_token");
-        console.log("Token encontrado:", accessToken ? "Sim" : "Não");
 
-        // Se não houver token, verificar se há erro
+        // Se não houver token, verificar erros
         if (!accessToken) {
-          const error = params.get("error");
-          const errorCode = params.get("error_code");
-          const errorDescription = params.get("error_description");
+          // Extrair informações de erro
+          const errorMatch = hash.match(/error=([^&]+)/);
+          const errorCodeMatch = hash.match(/error_code=([^&]+)/);
+          const errorDescriptionMatch = hash.match(/error_description=([^&]+)/);
 
-          console.log("Erro encontrado:", {
+          const error = errorMatch ? decodeURIComponent(errorMatch[1]) : null;
+          const errorCode = errorCodeMatch
+            ? decodeURIComponent(errorCodeMatch[1])
+            : null;
+          const errorDescription = errorDescriptionMatch
+            ? decodeURIComponent(errorDescriptionMatch[1])
+            : null;
+
+          console.log("Informações de erro:", {
             error,
             errorCode,
             errorDescription,
+            hasErrorInURL: hash.includes("error"),
           });
 
-          if (error === "expired_token" || errorCode === "401") {
+          // Verificar diferentes tipos de erro
+          if (
+            error === "expired_token" ||
+            errorCode === "401" ||
+            hash.includes("expired") ||
+            (errorDescription &&
+              errorDescription.toLowerCase().includes("expired"))
+          ) {
+            console.log("Link identificado como expirado");
             setLinkExpired(true);
             throw new Error(
               "O link de recuperação expirou. Por favor, solicite um novo link."
@@ -86,34 +113,61 @@ const ResetPassword: React.FC = () => {
             throw new Error(decodeURIComponent(errorDescription));
           }
 
+          // Se não houver token nem erro identificável, redirecionar
+          console.log(
+            "Redirecionando para recuperação de senha - sem token ou erro identificável"
+          );
           navigate("/esqueceu-senha");
           return;
         }
 
-        // Set the access token in Supabase
-        console.log("Tentando definir a sessão com o token...");
-        const {
-          data: { session },
-          error: sessionError,
-        } = await supabase.auth.setSession({
+        // Tentar configurar a sessão com o token
+        console.log("Configurando sessão com o token...");
+        const { data, error: sessionError } = await supabase.auth.setSession({
           access_token: accessToken,
           refresh_token: "",
         });
 
         if (sessionError) {
-          console.error("Erro ao definir sessão:", sessionError);
+          console.error("Erro ao configurar sessão:", {
+            message: sessionError.message,
+            status: sessionError?.status,
+            details: sessionError,
+          });
+
+          // Verificar se o erro indica expiração
+          if (
+            sessionError.message?.toLowerCase().includes("expired") ||
+            sessionError.message?.toLowerCase().includes("invalid")
+          ) {
+            setLinkExpired(true);
+            throw new Error(
+              "O link de recuperação expirou. Por favor, solicite um novo link."
+            );
+          }
+
           throw sessionError;
         }
 
-        if (!session) {
-          console.error("Sessão não criada");
-          throw new Error("Não foi possível iniciar a sessão");
+        if (!data.session) {
+          console.error("Sessão não criada após setSession");
+          throw new Error("Não foi possível iniciar a sessão de recuperação");
         }
 
-        console.log("Sessão criada com sucesso");
+        console.log("Sessão configurada com sucesso:", {
+          user: data.session?.user?.email,
+          aud: data.session?.user?.aud,
+          expiresAt: data.session?.expires_at,
+        });
+
         setInitializing(false);
       } catch (error: any) {
-        console.error("Erro na verificação:", error);
+        console.error("Erro na verificação do token:", {
+          message: error.message,
+          name: error.name,
+          stack: error.stack,
+        });
+
         toast.error(error.message || "Link de recuperação inválido.");
         setInitializing(false);
         setLinkExpired(true);

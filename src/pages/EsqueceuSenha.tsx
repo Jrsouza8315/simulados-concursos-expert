@@ -27,19 +27,40 @@ const EsqueceuSenha: React.FC = () => {
 
     try {
       // Construir a URL de redirecionamento usando hash routing
-      const redirectUrl = new URL(window.location.href);
-      redirectUrl.pathname = "/simulados-concursos-expert/";
-      redirectUrl.hash = "#/reset-password";
+      const baseUrl = window.location.origin;
+      const path = "/simulados-concursos-expert";
+      const hash = "#/reset-password";
 
-      console.log("URL de redirecionamento:", redirectUrl.toString());
+      // Garantir que a URL está formatada corretamente
+      const redirectUrl = `${baseUrl}${path}${hash}`;
 
-      const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: redirectUrl.toString(),
+      console.log("Detalhes da URL de redirecionamento:", {
+        baseUrl,
+        path,
+        hash,
+        fullUrl: redirectUrl,
       });
 
-      if (error) throw error;
+      const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: redirectUrl,
+        options: {
+          emailRedirectTo: redirectUrl,
+        },
+      });
 
-      console.log("Resposta do Supabase:", data);
+      if (error) {
+        console.error("Erro detalhado:", {
+          message: error.message,
+          status: error?.status,
+          details: error,
+        });
+        throw error;
+      }
+
+      console.log("Resposta do Supabase:", {
+        success: !!data,
+        data: data,
+      });
 
       toast.success(
         "Email enviado! Verifique sua caixa de entrada para redefinir sua senha. O link expira em 24 horas."
