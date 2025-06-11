@@ -94,38 +94,43 @@ const ResetPassword: React.FC = () => {
             hasErrorInURL: hash.includes("error"),
           });
 
-          // Verificar diferentes tipos de erro
-          if (
-            error === "expired_token" ||
-            errorCode === "401" ||
-            hash.includes("expired") ||
-            (errorDescription &&
-              errorDescription.toLowerCase().includes("expired"))
-          ) {
-            console.log("Link identificado como expirado");
+          if (error || errorCode || errorDescription) {
             setLinkExpired(true);
             throw new Error(
-              "O link de recuperação expirou. Por favor, solicite um novo link."
+              errorDescription || "O link de recuperação é inválido ou expirou."
             );
           }
 
-          if (errorDescription) {
-            throw new Error(decodeURIComponent(errorDescription));
-          }
-
-          // Se não houver token nem erro identificável, redirecionar
-          console.log(
-            "Redirecionando para recuperação de senha - sem token ou erro identificável"
-          );
+          console.log("Redirecionando - token não encontrado");
           navigate("/esqueceu-senha");
           return;
         }
 
+        // Extrair outros parâmetros importantes
+        const refreshMatch = hash.match(/refresh_token=([^&]+)/);
+        const refreshToken = refreshMatch ? refreshMatch[1] : "";
+
         // Tentar configurar a sessão com o token
         console.log("Configurando sessão com o token...");
+
+        // Primeiro, verificar se o token é válido
+        const {
+          data: { user },
+          error: verifyError,
+        } = await supabase.auth.getUser(accessToken);
+
+        if (verifyError || !user) {
+          console.error("Erro ao verificar token:", verifyError);
+          setLinkExpired(true);
+          throw new Error(
+            "O link de recuperação expirou. Por favor, solicite um novo link."
+          );
+        }
+
+        // Se o token é válido, configurar a sessão
         const { data, error: sessionError } = await supabase.auth.setSession({
           access_token: accessToken,
-          refresh_token: "",
+          refresh_token: refreshToken,
         });
 
         if (sessionError) {
@@ -134,18 +139,6 @@ const ResetPassword: React.FC = () => {
             status: sessionError?.status,
             details: sessionError,
           });
-
-          // Verificar se o erro indica expiração
-          if (
-            sessionError.message?.toLowerCase().includes("expired") ||
-            sessionError.message?.toLowerCase().includes("invalid")
-          ) {
-            setLinkExpired(true);
-            throw new Error(
-              "O link de recuperação expirou. Por favor, solicite um novo link."
-            );
-          }
-
           throw sessionError;
         }
 
@@ -156,9 +149,34 @@ const ResetPassword: React.FC = () => {
 
         console.log("Sessão configurada com sucesso:", {
           user: data.session?.user?.email,
-          aud: data.session?.user?.aud,
           expiresAt: data.session?.expires_at,
         });
+
+        // Verificar se o perfil do usuário existe
+        const { data: profile, error: profileError } = await supabase
+          .from("user_profiles")
+          .select("*")
+          .eq("id", data.session.user.id)
+          .single();
+
+        // Se não existir perfil, criar um novo
+        if (!profile && !profileError) {
+          const { error: createProfileError } = await supabase
+            .from("user_profiles")
+            .insert([
+              {
+                id: data.session.user.id,
+                email: data.session.user.email,
+                role: "visitante",
+                subscription_active: false,
+                created_at: new Date().toISOString(),
+              },
+            ]);
+
+          if (createProfileError) {
+            console.error("Erro ao criar perfil:", createProfileError);
+          }
+        }
 
         setInitializing(false);
       } catch (error: any) {
@@ -198,13 +216,30 @@ const ResetPassword: React.FC = () => {
 
     try {
       setLoading(true);
+
+      // Primeiro verificar se ainda temos uma sessão válida
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session) {
+        throw new Error(
+          "Sessão expirada. Por favor, solicite um novo link de recuperação."
+        );
+      }
+
       const { error: updateError } = await supabase.auth.updateUser({
         password: password,
       });
 
       if (updateError) throw updateError;
 
-      toast.success("Senha atualizada com sucesso!");
+      // Após atualizar a senha, fazer logout para forçar um novo login
+      await supabase.auth.signOut();
+
+      toast.success(
+        "Senha atualizada com sucesso! Por favor, faça login com sua nova senha."
+      );
 
       // Redirecionar para a página de login após 2 segundos
       setTimeout(() => {
@@ -214,6 +249,10 @@ const ResetPassword: React.FC = () => {
       console.error("Erro ao atualizar senha:", error);
       setError(error.message);
       toast.error(error.message || "Erro ao atualizar a senha.");
+
+      if (error.message.includes("expired")) {
+        setLinkExpired(true);
+      }
     } finally {
       setLoading(false);
     }

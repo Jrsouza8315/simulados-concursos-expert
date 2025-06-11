@@ -43,9 +43,6 @@ const EsqueceuSenha: React.FC = () => {
 
       const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: redirectUrl,
-        options: {
-          emailRedirectTo: redirectUrl,
-        },
       });
 
       if (error) {
