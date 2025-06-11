@@ -26,23 +26,11 @@ const EsqueceuSenha: React.FC = () => {
     setLoading(true);
 
     try {
-      // Construir a URL de redirecionamento usando hash routing
-      const baseUrl = window.location.origin;
-      const path = "/simulados-concursos-expert";
-      const resetPath = "#/reset-password";
+      // URL fixa do GitHub Pages
+      const redirectUrl =
+        "https://jrsouza8315.github.io/simulados-concursos-expert/#/reset-password";
 
-      // Garantir que a URL está formatada corretamente
-      const redirectUrl = `${baseUrl}${path}${resetPath}`;
-
-      console.log("Detalhes da URL de redirecionamento:", {
-        baseUrl,
-        path,
-        resetPath,
-        fullUrl: redirectUrl,
-        currentUrl: window.location.href,
-        currentOrigin: window.location.origin,
-        currentPathname: window.location.pathname,
-      });
+      console.log("URL de redirecionamento:", redirectUrl);
 
       const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: redirectUrl,
