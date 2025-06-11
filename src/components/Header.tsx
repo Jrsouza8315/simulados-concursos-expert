@@ -37,20 +37,12 @@ const Header = () => {
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
           <div className="flex items-center -ml-3">
-            <Link to="/" className="flex items-center gap-2">
+            <Link to="/" className="flex items-center">
               <img
                 src="/simulados-concursos-expert/logo.png"
                 alt="Ponto Simulado"
-                className="h-10 w-auto object-contain"
+                className="h-16 w-auto object-contain"
               />
-              <div className="hidden sm:flex flex-col">
-                <span className="text-lg font-bold text-primary-600">
-                  Ponto Simulado
-                </span>
-                <span className="text-xs text-gray-500">
-                  Simulados Concursos Expert
-                </span>
-              </div>
             </Link>
           </div>
 
