@@ -12,23 +12,32 @@ const Header = () => {
   const handleSignOut = async () => {
     try {
       await signOut();
-      navigate("/");
+      window.location.href =
+        "https://jrsouza8315.github.io/simulados-concursos-expert/#/";
     } catch (error) {
       console.error("Error signing out:", error);
     }
   };
 
   const getDashboardLink = () => {
+    if (userProfile?.email === "hbrcomercialssa@gmail.com") {
+      return "https://jrsouza8315.github.io/simulados-concursos-expert/#/admin";
+    }
+
     switch (userProfile?.role) {
       case "admin":
-        return "/admin";
+        return "https://jrsouza8315.github.io/simulados-concursos-expert/#/admin";
       case "assinante":
-        return "/dashboard";
+        return "https://jrsouza8315.github.io/simulados-concursos-expert/#/dashboard";
       case "visitante":
-        return "/visitante";
+        return "https://jrsouza8315.github.io/simulados-concursos-expert/#/visitante";
       default:
-        return "/";
+        return "https://jrsouza8315.github.io/simulados-concursos-expert/#/";
     }
+  };
+
+  const getFullUrl = (path: string) => {
+    return `https://jrsouza8315.github.io/simulados-concursos-expert/#${path}`;
   };
 
   return (
@@ -37,56 +46,56 @@ const Header = () => {
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
           <div className="flex items-center -ml-3">
-            <Link to="/" className="flex items-center">
+            <a href={getFullUrl("/")} className="flex items-center">
               <img
                 src="/simulados-concursos-expert/logo.png"
                 alt="Ponto Simulado"
                 className="h-16 w-auto object-contain"
               />
-            </Link>
+            </a>
           </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <Link
-              to="/"
+            <a
+              href={getFullUrl("/")}
               className="text-gray-700 hover:text-primary-600 transition-colors"
             >
               Início
-            </Link>
-            <Link
-              to="/concursos"
+            </a>
+            <a
+              href={getFullUrl("/concursos")}
               className="text-gray-700 hover:text-primary-600 transition-colors"
             >
               Concursos
-            </Link>
-            <Link
-              to="/simulados"
+            </a>
+            <a
+              href={getFullUrl("/simulados")}
               className="text-gray-700 hover:text-primary-600 transition-colors"
             >
               Simulados
-            </Link>
-            <Link
-              to="/apostilas"
+            </a>
+            <a
+              href={getFullUrl("/apostilas")}
               className="text-gray-700 hover:text-primary-600 transition-colors"
             >
               Apostilas
-            </Link>
+            </a>
             {!user && (
-              <Link
-                to="/planos"
+              <a
+                href={getFullUrl("/planos")}
                 className="text-gray-700 hover:text-primary-600 transition-colors"
               >
                 Planos
-              </Link>
+              </a>
             )}
             {user && (
-              <Link
-                to={getDashboardLink()}
+              <a
+                href={getDashboardLink()}
                 className="text-gray-700 hover:text-primary-600 transition-colors"
               >
                 {userProfile?.role === "admin" ? "Admin" : "Dashboard"}
-              </Link>
+              </a>
             )}
           </nav>
 
@@ -123,7 +132,7 @@ const Header = () => {
               </div>
             ) : (
               <>
-                <Link to="/acesso">
+                <a href={getFullUrl("/acesso")}>
                   <Button
                     variant="outline"
                     size="sm"
@@ -132,15 +141,15 @@ const Header = () => {
                     <User className="h-4 w-4" />
                     Entrar
                   </Button>
-                </Link>
-                <Link to="/acesso?tab=cadastro">
+                </a>
+                <a href={getFullUrl("/acesso?tab=cadastro")}>
                   <Button
                     size="sm"
                     className="bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700"
                   >
                     Assinar Agora
                   </Button>
-                </Link>
+                </a>
               </>
             )}
           </div>
@@ -161,81 +170,46 @@ const Header = () => {
         {isMenuOpen && (
           <div className="md:hidden py-4 border-t border-gray-200">
             <div className="space-y-2">
-              <Link
-                to="/"
+              <a
+                href={getFullUrl("/")}
                 className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
               >
                 Início
-              </Link>
-              <Link
-                to="/concursos"
+              </a>
+              <a
+                href={getFullUrl("/concursos")}
                 className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
               >
                 Concursos
-              </Link>
-              <Link
-                to="/simulados"
+              </a>
+              <a
+                href={getFullUrl("/simulados")}
                 className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
               >
                 Simulados
-              </Link>
-              <Link
-                to="/apostilas"
+              </a>
+              <a
+                href={getFullUrl("/apostilas")}
                 className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
               >
                 Apostilas
-              </Link>
+              </a>
               {!user && (
-                <Link
-                  to="/planos"
+                <a
+                  href={getFullUrl("/planos")}
                   className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
                 >
                   Planos
-                </Link>
+                </a>
               )}
               {user && (
-                <Link
-                  to={getDashboardLink()}
+                <a
+                  href={getDashboardLink()}
                   className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
                 >
                   {userProfile?.role === "admin" ? "Admin" : "Dashboard"}
-                </Link>
+                </a>
               )}
-
-              <div className="pt-4 space-y-2">
-                {user ? (
-                  <div className="space-y-2">
-                    <div className="px-3 py-2 text-sm text-gray-600">
-                      {userProfile?.email}
-                      {userProfile?.role && (
-                        <span className="block mt-1 px-2 py-1 bg-primary-100 text-primary-800 text-xs rounded capitalize w-fit">
-                          {userProfile.role}
-                        </span>
-                      )}
-                    </div>
-                    <Button
-                      variant="outline"
-                      onClick={handleSignOut}
-                      className="w-full"
-                    >
-                      Sair
-                    </Button>
-                  </div>
-                ) : (
-                  <>
-                    <Link to="/acesso" className="block w-full">
-                      <Button variant="outline" className="w-full">
-                        Entrar
-                      </Button>
-                    </Link>
-                    <Link to="/acesso?tab=cadastro" className="block w-full">
-                      <Button className="w-full bg-gradient-to-r from-primary-600 to-secondary-600">
-                        Assinar Agora
-                      </Button>
-                    </Link>
-                  </>
-                )}
-              </div>
             </div>
           </div>
         )}

@@ -1,8 +1,13 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
+import { Input } from "../components/ui/input";
+import { Button } from "../components/ui/button";
 import {
   Form,
   FormControl,
@@ -10,16 +15,15 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
+} from "../components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { toast } from "sonner";
 import { Eye, EyeOff, Facebook, Mail } from "lucide-react";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import { useAuth } from "@/contexts/AuthContext";
-import { useEffect } from "react";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
+import { useAuth } from "../contexts/AuthContext";
 
 // Esquema de validação para o login
 const loginSchema = z.object({
@@ -106,11 +110,24 @@ const Acesso = () => {
 
       // Se for o email do admin, redirecionar imediatamente
       if (values.email === "hbrcomercialssa@gmail.com") {
-        navigate("/admin");
+        // Forçar redirecionamento completo para o GitHub Pages
+        window.location.href =
+          "https://jrsouza8315.github.io/simulados-concursos-expert/#/admin";
         return;
       }
 
       // Para outros usuários, o redirecionamento será feito pelo useEffect
+      const redirectMap = {
+        admin: "/admin",
+        assinante: "/dashboard",
+        visitante: "/visitante",
+      };
+
+      if (userProfile) {
+        const redirectTo = redirectMap[userProfile.role] || "/";
+        // Forçar redirecionamento completo para o GitHub Pages
+        window.location.href = `https://jrsouza8315.github.io/simulados-concursos-expert/#${redirectTo}`;
+      }
     } catch (error: any) {
       console.error("Login error:", error);
       let errorMessage = "Erro ao fazer login. Verifique suas credenciais.";
