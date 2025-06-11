@@ -54,16 +54,28 @@ const ResetPassword: React.FC = () => {
       try {
         // Verificar se há erro na URL
         const hash = window.location.hash;
-        const accessToken = hash.split("access_token=")?.[1]?.split("&")?.[0];
+        console.log("Hash da URL:", hash);
+
+        // Tentar extrair o token do hash
+        const params = new URLSearchParams(
+          hash.replace("#/reset-password#", "")
+        );
+        const accessToken = params.get("access_token");
+        console.log("Token encontrado:", accessToken ? "Sim" : "Não");
 
         // Se não houver token, verificar se há erro
         if (!accessToken) {
-          const errorCode = hash.split("error_code=")?.[1]?.split("&")?.[0];
-          const errorDescription = hash
-            .split("error_description=")?.[1]
-            ?.split("&")?.[0];
+          const error = params.get("error");
+          const errorCode = params.get("error_code");
+          const errorDescription = params.get("error_description");
 
-          if (errorCode === "401") {
+          console.log("Erro encontrado:", {
+            error,
+            errorCode,
+            errorDescription,
+          });
+
+          if (error === "expired_token" || errorCode === "401") {
             setLinkExpired(true);
             throw new Error(
               "O link de recuperação expirou. Por favor, solicite um novo link."
@@ -79,6 +91,7 @@ const ResetPassword: React.FC = () => {
         }
 
         // Set the access token in Supabase
+        console.log("Tentando definir a sessão com o token...");
         const {
           data: { session },
           error: sessionError,
@@ -87,10 +100,17 @@ const ResetPassword: React.FC = () => {
           refresh_token: "",
         });
 
-        if (sessionError || !session) {
-          throw new Error("Sessão inválida ou expirada");
+        if (sessionError) {
+          console.error("Erro ao definir sessão:", sessionError);
+          throw sessionError;
         }
 
+        if (!session) {
+          console.error("Sessão não criada");
+          throw new Error("Não foi possível iniciar a sessão");
+        }
+
+        console.log("Sessão criada com sucesso");
         setInitializing(false);
       } catch (error: any) {
         console.error("Erro na verificação:", error);
