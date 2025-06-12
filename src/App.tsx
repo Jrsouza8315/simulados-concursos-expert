@@ -28,6 +28,9 @@ import AssinanteDashboard from "./pages/assinante/AssinanteDashboard";
 import VisitanteDashboard from "./pages/visitante/VisitanteDashboard";
 import Unauthorized from "./pages/Unauthorized";
 import NotFound from "./pages/NotFound";
+import Home from "./pages/Home";
+import ResetSenha from "./pages/ResetSenha";
+import Dashboard from "./pages/Dashboard";
 
 const queryClient = new QueryClient();
 
@@ -75,7 +78,7 @@ const App: React.FC = () => {
                       shouldRedirectToReset() ? (
                         <Navigate to="/reset-password" replace />
                       ) : (
-                        <Index />
+                        <Home />
                       )
                     }
                   />
@@ -85,7 +88,7 @@ const App: React.FC = () => {
                   <Route path="/planos" element={<Planos />} />
                   <Route path="/acesso" element={<Acesso />} />
                   <Route path="/esqueceu-senha" element={<EsqueceuSenha />} />
-                  <Route path="/reset-password" element={<ResetPassword />} />
+                  <Route path="/reset-password" element={<ResetSenha />} />
                   <Route path="/unauthorized" element={<Unauthorized />} />
                   <Route path="/simulados" element={<Simulados />} />
 
@@ -94,7 +97,7 @@ const App: React.FC = () => {
                     path="/dashboard"
                     element={
                       <ProtectedRoute allowedRoles={["assinante", "admin"]}>
-                        <AssinanteDashboard />
+                        <Dashboard />
                       </ProtectedRoute>
                     }
                   />

@@ -29,14 +29,31 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Plus, Search, RefreshCw, Edit, Trash2 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 
 export const QuestionManagement = () => {
   const [questions, setQuestions] = useState<Question[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredQuestions, setFilteredQuestions] = useState<Question[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [newQuestion, setNewQuestion] = useState<Partial<Question>>({
+    title: "",
+    content: "",
+    answer: "",
+    explanation: "",
+    category: "",
+    difficulty: "easy",
+  });
 
   const [formData, setFormData] = useState({
     enunciado: "",
@@ -150,6 +167,35 @@ export const QuestionManagement = () => {
     }
   };
 
+  const handleCreateQuestion = async () => {
+    try {
+      const { error } = await supabase.from("questions").insert([
+        {
+          ...newQuestion,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+      ]);
+
+      if (error) throw error;
+
+      toast.success("Questão criada com sucesso");
+      setIsDialogOpen(false);
+      setNewQuestion({
+        title: "",
+        content: "",
+        answer: "",
+        explanation: "",
+        category: "",
+        difficulty: "easy",
+      });
+      fetchQuestions();
+    } catch (error) {
+      console.error("Error creating question:", error);
+      toast.error("Erro ao criar questão");
+    }
+  };
+
   return (
     <div className="space-y-6">
       <Card>
@@ -157,14 +203,122 @@ export const QuestionManagement = () => {
           <div className="flex items-center justify-between">
             <CardTitle>Gestão de Questões</CardTitle>
             <div className="flex gap-2">
-              <Button variant="outline" onClick={fetchQuestions}>
+              <Button
+                variant="outline"
+                onClick={fetchQuestions}
+                disabled={loading}
+              >
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Atualizar
               </Button>
-              <Button onClick={() => setShowForm(true)}>
-                <Plus className="h-4 w-4 mr-2" />
-                Nova Questão
-              </Button>
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Nova Questão
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>Criar Nova Questão</DialogTitle>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+                    <div className="grid gap-2">
+                      <Label htmlFor="title">Título</Label>
+                      <Input
+                        id="title"
+                        value={newQuestion.title}
+                        onChange={(e) =>
+                          setNewQuestion({
+                            ...newQuestion,
+                            title: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="content">Enunciado</Label>
+                      <Textarea
+                        id="content"
+                        value={newQuestion.content}
+                        onChange={(e) =>
+                          setNewQuestion({
+                            ...newQuestion,
+                            content: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="answer">Resposta</Label>
+                      <Input
+                        id="answer"
+                        value={newQuestion.answer}
+                        onChange={(e) =>
+                          setNewQuestion({
+                            ...newQuestion,
+                            answer: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="explanation">Explicação</Label>
+                      <Textarea
+                        id="explanation"
+                        value={newQuestion.explanation}
+                        onChange={(e) =>
+                          setNewQuestion({
+                            ...newQuestion,
+                            explanation: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="category">Categoria</Label>
+                      <Input
+                        id="category"
+                        value={newQuestion.category}
+                        onChange={(e) =>
+                          setNewQuestion({
+                            ...newQuestion,
+                            category: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="difficulty">Dificuldade</Label>
+                      <select
+                        id="difficulty"
+                        className="border rounded px-2 py-1"
+                        value={newQuestion.difficulty}
+                        onChange={(e) =>
+                          setNewQuestion({
+                            ...newQuestion,
+                            difficulty: e.target
+                              .value as Question["difficulty"],
+                          })
+                        }
+                      >
+                        <option value="easy">Fácil</option>
+                        <option value="medium">Média</option>
+                        <option value="hard">Difícil</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="flex justify-end gap-2">
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsDialogOpen(false)}
+                    >
+                      Cancelar
+                    </Button>
+                    <Button onClick={handleCreateQuestion}>Criar</Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
         </CardHeader>

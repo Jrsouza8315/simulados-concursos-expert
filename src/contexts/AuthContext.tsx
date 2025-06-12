@@ -9,12 +9,22 @@ import { supabase } from "../integrations/supabase/client";
 import type { User, Session } from "@supabase/supabase-js";
 import { AuthContextType, UserProfile } from "../types";
 import { getFullUrl } from "../utils/url";
+import { toast } from "sonner";
 
 export type UserRole = "admin" | "assinante" | "visitante";
 
+interface AuthContextType {
+  userProfile: UserProfile | null;
+  signIn: (email: string, password: string) => Promise<void>;
+  signOut: () => Promise<void>;
+  loading: boolean;
+}
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [user, setUser] = useState<User | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -28,17 +38,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(session?.user ?? null);
       if (session?.user) {
         fetchUserProfile(session.user.id);
+      } else {
+        setLoading(false);
       }
     });
 
     // Escutar mudanças de auth
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("Auth state changed:", event, session?.user?.email);
+
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        fetchUserProfile(session.user.id);
+        await fetchUserProfile(session.user.id);
+      } else {
+        setUserProfile(null);
+        setLoading(false);
       }
     });
 
@@ -164,6 +181,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     } catch (error) {
       console.error("Error in fetchUserProfile:", error);
+      toast.error("Erro ao carregar perfil do usuário");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -241,12 +261,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
+};
 
-export function useAuth() {
+export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
     throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
-}
+};

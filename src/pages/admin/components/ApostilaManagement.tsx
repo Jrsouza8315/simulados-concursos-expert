@@ -37,15 +37,30 @@ import {
   Download,
   Eye,
 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 
 export const ApostilaManagement = () => {
   const [apostilas, setApostilas] = useState<Apostila[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredApostilas, setFilteredApostilas] = useState<Apostila[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editingApostila, setEditingApostila] = useState<Apostila | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [newApostila, setNewApostila] = useState<Partial<Apostila>>({
+    title: "",
+    description: "",
+    category: "",
+    file_url: "",
+  });
 
   const [formData, setFormData] = useState({
     titulo: "",
@@ -95,19 +110,22 @@ export const ApostilaManagement = () => {
       const filePath = `apostilas/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
-        .from("apostilas")
+        .from("public")
         .upload(filePath, file);
 
       if (uploadError) throw uploadError;
 
-      const { data } = supabase.storage
-        .from("apostilas")
+      const { data: urlData } = supabase.storage
+        .from("public")
         .getPublicUrl(filePath);
 
-      return data.publicUrl;
+      if (urlData) {
+        setNewApostila({ ...newApostila, file_url: urlData.publicUrl });
+        toast.success("Arquivo enviado com sucesso");
+      }
     } catch (error) {
       console.error("Error uploading file:", error);
-      throw error;
+      toast.error("Erro ao enviar arquivo");
     } finally {
       setUploading(false);
     }
@@ -200,6 +218,33 @@ export const ApostilaManagement = () => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
+  const handleCreateApostila = async () => {
+    try {
+      const { error } = await supabase.from("apostilas").insert([
+        {
+          ...newApostila,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+      ]);
+
+      if (error) throw error;
+
+      toast.success("Apostila criada com sucesso");
+      setIsDialogOpen(false);
+      setNewApostila({
+        title: "",
+        description: "",
+        category: "",
+        file_url: "",
+      });
+      fetchApostilas();
+    } catch (error) {
+      console.error("Error creating apostila:", error);
+      toast.error("Erro ao criar apostila");
+    }
+  };
+
   return (
     <div className="space-y-6">
       <Card>
@@ -211,10 +256,80 @@ export const ApostilaManagement = () => {
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Atualizar
               </Button>
-              <Button onClick={() => setShowForm(true)}>
-                <Plus className="h-4 w-4 mr-2" />
-                Nova Apostila
-              </Button>
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button>Nova Apostila</Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>Criar Nova Apostila</DialogTitle>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+                    <div className="grid gap-2">
+                      <Label htmlFor="title">Título</Label>
+                      <Input
+                        id="title"
+                        value={newApostila.title}
+                        onChange={(e) =>
+                          setNewApostila({
+                            ...newApostila,
+                            title: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="description">Descrição</Label>
+                      <Textarea
+                        id="description"
+                        value={newApostila.description}
+                        onChange={(e) =>
+                          setNewApostila({
+                            ...newApostila,
+                            description: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="category">Categoria</Label>
+                      <Input
+                        id="category"
+                        value={newApostila.category}
+                        onChange={(e) =>
+                          setNewApostila({
+                            ...newApostila,
+                            category: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="file">Arquivo</Label>
+                      <Input
+                        id="file"
+                        type="file"
+                        accept=".pdf,.doc,.docx"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            handleFileUpload(file);
+                          }
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="flex justify-end gap-2">
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsDialogOpen(false)}
+                    >
+                      Cancelar
+                    </Button>
+                    <Button onClick={handleCreateApostila}>Criar</Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
         </CardHeader>

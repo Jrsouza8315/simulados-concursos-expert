@@ -216,18 +216,18 @@ const AdminDashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {stats.recentActivity.map((activity, index) => (
+                  {stats.recentActivity.map((activity) => (
                     <div
-                      key={index}
-                      className="flex items-center justify-between py-2 border-b last:border-0"
+                      key={activity.id}
+                      className="flex items-center justify-between"
                     >
-                      <div>
-                        <p className="font-medium">{activity.description}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {new Date(activity.timestamp).toLocaleString()}
-                        </p>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline">{activity.action}</Badge>
+                        <span>{activity.details}</span>
                       </div>
-                      <Badge variant="outline">{activity.type}</Badge>
+                      <span className="text-sm text-muted-foreground">
+                        {new Date(activity.created_at).toLocaleString()}
+                      </span>
                     </div>
                   ))}
                 </div>

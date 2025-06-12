@@ -36,14 +36,31 @@ import {
   Trash2,
   Link as LinkIcon,
 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 
 export const ConcursoManagement = () => {
   const [concursos, setConcursos] = useState<Concurso[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredConcursos, setFilteredConcursos] = useState<Concurso[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editingConcurso, setEditingConcurso] = useState<Concurso | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [newConcurso, setNewConcurso] = useState<Partial<Concurso>>({
+    title: "",
+    description: "",
+    organization: "",
+    status: "open",
+    start_date: "",
+    end_date: "",
+  });
 
   const [formData, setFormData] = useState({
     titulo: "",
@@ -162,6 +179,35 @@ export const ConcursoManagement = () => {
     }
   };
 
+  const handleCreateConcurso = async () => {
+    try {
+      const { error } = await supabase.from("concursos").insert([
+        {
+          ...newConcurso,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+      ]);
+
+      if (error) throw error;
+
+      toast.success("Concurso criado com sucesso");
+      setIsDialogOpen(false);
+      setNewConcurso({
+        title: "",
+        description: "",
+        organization: "",
+        status: "open",
+        start_date: "",
+        end_date: "",
+      });
+      fetchConcursos();
+    } catch (error) {
+      console.error("Error creating concurso:", error);
+      toast.error("Erro ao criar concurso");
+    }
+  };
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "aberto":
@@ -186,10 +232,114 @@ export const ConcursoManagement = () => {
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Atualizar
               </Button>
-              <Button onClick={() => setShowForm(true)}>
-                <Plus className="h-4 w-4 mr-2" />
-                Novo Concurso
-              </Button>
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Novo Concurso
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>Criar Novo Concurso</DialogTitle>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+                    <div className="grid gap-2">
+                      <Label htmlFor="title">Título</Label>
+                      <Input
+                        id="title"
+                        value={newConcurso.title}
+                        onChange={(e) =>
+                          setNewConcurso({
+                            ...newConcurso,
+                            title: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="description">Descrição</Label>
+                      <Textarea
+                        id="description"
+                        value={newConcurso.description}
+                        onChange={(e) =>
+                          setNewConcurso({
+                            ...newConcurso,
+                            description: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="organization">Organizadora</Label>
+                      <Input
+                        id="organization"
+                        value={newConcurso.organization}
+                        onChange={(e) =>
+                          setNewConcurso({
+                            ...newConcurso,
+                            organization: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="status">Status</Label>
+                      <select
+                        id="status"
+                        className="border rounded px-2 py-1"
+                        value={newConcurso.status}
+                        onChange={(e) =>
+                          setNewConcurso({
+                            ...newConcurso,
+                            status: e.target.value as Concurso["status"],
+                          })
+                        }
+                      >
+                        <option value="open">Aberto</option>
+                        <option value="closed">Encerrado</option>
+                      </select>
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="start_date">Data de Início</Label>
+                      <Input
+                        id="start_date"
+                        type="date"
+                        value={newConcurso.start_date}
+                        onChange={(e) =>
+                          setNewConcurso({
+                            ...newConcurso,
+                            start_date: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="end_date">Data de Término</Label>
+                      <Input
+                        id="end_date"
+                        type="date"
+                        value={newConcurso.end_date}
+                        onChange={(e) =>
+                          setNewConcurso({
+                            ...newConcurso,
+                            end_date: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                  </div>
+                  <div className="flex justify-end gap-2">
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsDialogOpen(false)}
+                    >
+                      Cancelar
+                    </Button>
+                    <Button onClick={handleCreateConcurso}>Criar</Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
         </CardHeader>

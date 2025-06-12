@@ -1,211 +1,195 @@
-
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Clock, Filter, Book, CheckCircle } from 'lucide-react';
-import { 
-  Sidebar, 
-  SidebarContent, 
-  SidebarGroup, 
-  SidebarGroupContent, 
-  SidebarGroupLabel,
-  SidebarProvider,
-  SidebarTrigger,
-  SidebarInset
-} from '@/components/ui/sidebar';
-import Header from '@/components/Header';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "../components/ui/button";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
+import { useAuth } from "../contexts/AuthContext";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import { supabase } from "../integrations/supabase/client";
+import { toast } from "sonner";
+import { Question } from "../types/admin";
+import { Badge } from "../components/ui/badge";
 
 const Simulados = () => {
-  const [selectedFilters, setSelectedFilters] = useState({
-    banca: '',
-    cargo: '',
-    disciplina: '',
-    ano: ''
-  });
+  const navigate = useNavigate();
+  const { userProfile } = useAuth();
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const simulados = [
-    {
-      title: "Simulado TRT - Analista Judiciário",
-      questions: 50,
-      time: 180,
-      difficulty: "Médio",
-      subjects: ["Direito Constitucional", "Direito Administrativo", "Português"]
-    },
-    {
-      title: "Simulado Receita Federal - Auditor",
-      questions: 70,
-      time: 240,
-      difficulty: "Difícil",
-      subjects: ["Direito Tributário", "Contabilidade", "Matemática"]
-    },
-    {
-      title: "Simulado INSS - Técnico",
-      questions: 40,
-      time: 120,
-      difficulty: "Fácil",
-      subjects: ["Direito Previdenciário", "Informática", "Português"]
+  useEffect(() => {
+    fetchQuestions();
+  }, []);
+
+  const fetchQuestions = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("questions")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+
+      setQuestions(data || []);
+    } catch (error) {
+      console.error("Error fetching questions:", error);
+      toast.error("Erro ao carregar questões");
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
 
-  const FilterSidebar = () => (
-    <Sidebar>
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel className="flex items-center gap-2">
-            <Filter className="h-5 w-5" />
-            Filtros
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <div className="space-y-6 p-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Banca Organizadora
-                </label>
-                <select className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent">
-                  <option value="">Todas as bancas</option>
-                  <option value="cespe">CESPE/CEBRASPE</option>
-                  <option value="fcc">FCC</option>
-                  <option value="fgv">FGV</option>
-                  <option value="vunesp">VUNESP</option>
-                </select>
-              </div>
+  const handleStartSimulado = () => {
+    if (!userProfile) {
+      toast.error("Faça login para acessar os simulados");
+      navigate("/acesso");
+      return;
+    }
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Cargo
-                </label>
-                <select className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent">
-                  <option value="">Todos os cargos</option>
-                  <option value="analista">Analista</option>
-                  <option value="tecnico">Técnico</option>
-                  <option value="auditor">Auditor</option>
-                </select>
-              </div>
+    if (userProfile.role === "visitante") {
+      toast.error("Assine para acessar os simulados");
+      navigate("/planos");
+      return;
+    }
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Disciplina
-                </label>
-                <select className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent">
-                  <option value="">Todas as disciplinas</option>
-                  <option value="constitucional">Direito Constitucional</option>
-                  <option value="administrativo">Direito Administrativo</option>
-                  <option value="portugues">Português</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Ano
-                </label>
-                <select className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent">
-                  <option value="">Todos os anos</option>
-                  <option value="2024">2024</option>
-                  <option value="2023">2023</option>
-                  <option value="2022">2022</option>
-                </select>
-              </div>
-
-              <Button className="w-full bg-gradient-to-r from-primary-600 to-secondary-600">
-                Aplicar Filtros
-              </Button>
-            </div>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-    </Sidebar>
-  );
+    // TODO: Implementar lógica de simulado
+    toast.info("Em desenvolvimento");
+  };
 
   return (
-    <SidebarProvider>
-      <div className="min-h-screen flex w-full">
-        <FilterSidebar />
-        
-        <SidebarInset>
-          <Header />
-          
-          <div className="pt-20">
-            {/* Page Header */}
-            <div className="bg-white shadow-sm">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <div className="flex items-center gap-4 mb-4">
-                  <SidebarTrigger />
-                  <div>
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Simulados</h1>
-                    <p className="text-gray-600">Pratique com provas reais e cronômetro para maximizar seu desempenho</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-              {/* Simulados List */}
-              <div className="space-y-6">
-                {simulados.map((simulado, index) => (
-                  <div key={index} className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
-                    <div className="flex justify-between items-start mb-4">
-                      <div>
-                        <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                          {simulado.title}
-                        </h3>
-                        <div className="flex flex-wrap gap-2 mb-3">
-                          {simulado.subjects.map((subject, subIndex) => (
-                            <span key={subIndex} className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
-                              {subject}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        simulado.difficulty === 'Fácil' ? 'bg-green-100 text-green-800' :
-                        simulado.difficulty === 'Médio' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-red-100 text-red-800'
-                      }`}>
-                        {simulado.difficulty}
-                      </span>
-                    </div>
-
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-                      <div className="flex items-center gap-2">
-                        <Book className="h-4 w-4 text-gray-500" />
-                        <span className="text-sm text-gray-600">{simulado.questions} questões</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Clock className="h-4 w-4 text-gray-500" />
-                        <span className="text-sm text-gray-600">{simulado.time} minutos</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4 text-gray-500" />
-                        <span className="text-sm text-gray-600">Correção automática</span>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col sm:flex-row gap-3">
-                      <Button className="flex-1 bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700">
-                        Iniciar Simulado
-                      </Button>
-                      <Button variant="outline" className="flex-1">
-                        Ver Questões
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Pagination */}
-              <div className="flex justify-center mt-12">
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm">Anterior</Button>
-                  <Button size="sm" className="bg-primary-600">1</Button>
-                  <Button variant="outline" size="sm">2</Button>
-                  <Button variant="outline" size="sm">3</Button>
-                  <Button variant="outline" size="sm">Próximo</Button>
-                </div>
-              </div>
-            </div>
+    <div className="min-h-screen bg-background">
+      <Header />
+      <main className="container mx-auto px-4 py-8">
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-bold">Simulados</h1>
+            <p className="text-muted-foreground">
+              Pratique com questões de concursos anteriores
+            </p>
           </div>
-        </SidebarInset>
-      </div>
-    </SidebarProvider>
+          <Button onClick={handleStartSimulado}>Iniciar Simulado</Button>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Simulado Personalizado</CardTitle>
+              <CardDescription>
+                Crie um simulado com questões específicas
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  Selecione as matérias e o nível de dificuldade
+                </p>
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={handleStartSimulado}
+                >
+                  Criar Simulado
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Simulado Rápido</CardTitle>
+              <CardDescription>
+                Simulado com 10 questões aleatórias
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  Ideal para uma prática rápida
+                </p>
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={handleStartSimulado}
+                >
+                  Iniciar Rápido
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Simulado Completo</CardTitle>
+              <CardDescription>
+                Simulado com 60 questões variadas
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  Simule uma prova completa
+                </p>
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={handleStartSimulado}
+                >
+                  Iniciar Completo
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <Card className="mt-8">
+          <CardHeader>
+            <CardTitle>Banco de Questões</CardTitle>
+            <CardDescription>
+              {questions.length} questões disponíveis
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {loading ? (
+                <p className="text-center text-muted-foreground">
+                  Carregando questões...
+                </p>
+              ) : questions.length === 0 ? (
+                <p className="text-center text-muted-foreground">
+                  Nenhuma questão disponível
+                </p>
+              ) : (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {Array.from(new Set(questions.map((q) => q.category))).map(
+                    (category) => (
+                      <div
+                        key={category}
+                        className="flex items-center justify-between p-4 border rounded-lg"
+                      >
+                        <span>{category}</span>
+                        <Badge variant="secondary">
+                          {
+                            questions.filter((q) => q.category === category)
+                              .length
+                          }
+                        </Badge>
+                      </div>
+                    )
+                  )}
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </main>
+      <Footer />
+    </div>
   );
 };
 
