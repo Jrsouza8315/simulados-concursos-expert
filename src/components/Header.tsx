@@ -48,7 +48,7 @@ const Header = () => {
           <div className="flex items-center -ml-3">
             <a href={getFullUrl("/")} className="flex items-center">
               <img
-                src="/ponto-simulado/logo.png"
+                src="/simulados-concursos-expert/logo.png"
                 alt="Ponto Simulado"
                 className="h-16 w-auto object-contain"
               />
