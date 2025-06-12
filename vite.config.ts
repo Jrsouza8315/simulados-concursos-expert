@@ -31,4 +31,5 @@ export default defineConfig({
     // Ensure proper MIME types
     assetsInlineLimit: 0,
   },
+  publicDir: "public",
 });
