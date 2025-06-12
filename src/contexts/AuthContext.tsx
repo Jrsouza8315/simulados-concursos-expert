@@ -7,25 +7,70 @@ import React, {
 } from "react";
 import { supabase } from "../integrations/supabase/client";
 import type { User, Session } from "@supabase/supabase-js";
-import { AuthContextType } from "../types";
+import { AuthContextType, UserProfile } from "../types";
 
 export type UserRole = "admin" | "assinante" | "visitante";
-
-interface UserProfile {
-  id: string;
-  email: string;
-  role: UserRole;
-  subscription_active?: boolean;
-}
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    // Verificar sessão atual
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        fetchUserProfile(session.user.id);
+      }
+    });
+
+    // Escutar mudanças de auth
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        fetchUserProfile(session.user.id);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const signIn = async (email: string, password: string) => {
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
+      // Se for o admin, redirecionar imediatamente
+      if (email === "hbrcomercialssa@gmail.com") {
+        console.log("Admin login detectado, redirecionando...");
+        window.location.href = "/admin";
+        return data;
+      }
+
+      // Fetch user profile immediately after sign in
+      if (data.user) {
+        await fetchUserProfile(data.user.id);
+      }
+
+      return data;
+    } catch (error) {
+      console.error("Error in signIn:", error);
+      throw error;
+    }
+  };
 
   const fetchUserProfile = async (userId: string) => {
     try {
@@ -73,9 +118,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           });
 
           // Redirecionar para a página de admin
-          window.location.replace(
-            "https://jrsouza8315.github.io/simulados-concursos-expert/#/admin"
-          );
+          window.location.href = "/admin";
           return;
         }
 
@@ -101,15 +144,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               console.log("Successfully updated to admin role");
               data.role = "admin";
               // Redirecionar para a página de admin após atualização
-              window.location.replace(
-                "https://jrsouza8315.github.io/simulados-concursos-expert/#/admin"
-              );
+              window.location.href = "/admin";
             }
           } else {
             // Se já for admin, redirecionar
-            window.location.replace(
-              "https://jrsouza8315.github.io/simulados-concursos-expert/#/admin"
-            );
+            window.location.href = "/admin";
           }
         }
 
@@ -117,67 +156,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           id: data.id,
           email: data.email,
           role: data.role as UserRole,
-          subscription_active:
-            data.subscription_active === null
-              ? undefined
-              : data.subscription_active,
+          subscription_active: data.subscription_active || false,
         };
         console.log("Setting user profile:", profile);
         setUserProfile(profile);
       }
     } catch (error) {
       console.error("Error in fetchUserProfile:", error);
-    }
-  };
-
-  useEffect(() => {
-    // Set up auth state listener
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Auth state changed:", event, session?.user?.email);
-      setSession(session);
-      setUser(session?.user ?? null);
-
-      if (session?.user) {
-        await fetchUserProfile(session.user.id);
-      } else {
-        setUserProfile(null);
-      }
-      setLoading(false);
-    });
-
-    // Get initial session
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        await fetchUserProfile(session.user.id);
-      }
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  const signIn = async (email: string, password: string) => {
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) throw error;
-
-      // Fetch user profile immediately after sign in
-      if (data.user) {
-        await fetchUserProfile(data.user.id);
-      }
-
-      return data;
-    } catch (error) {
-      console.error("Error in signIn:", error);
-      throw error;
     }
   };
 
@@ -194,19 +179,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (error) throw error;
 
-      if (data.user) {
-        const profile = {
-          id: data.user.id,
-          email: data.user.email || "",
-          role,
-          subscription_active: false,
-        };
-
+      if (data.user && data.user.email) {
+        // Criar perfil do usuário
         const { error: profileError } = await supabase
           .from("user_profiles")
-          .insert([profile]);
+          .insert({
+            id: data.user.id,
+            email: data.user.email,
+            role,
+            subscription_active: false,
+            created_at: new Date().toISOString(),
+          });
 
-        if (profileError) throw profileError;
+        if (profileError) {
+          console.error("Error creating user profile:", profileError);
+          throw profileError;
+        }
       }
 
       return data;
@@ -217,14 +205,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
-    setUserProfile(null);
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      setUser(null);
+      setUserProfile(null);
+      setSession(null);
+    } catch (error) {
+      console.error("Error in signOut:", error);
+      throw error;
+    }
   };
 
   const resetPassword = async (email: string) => {
-    const { error } = await supabase.auth.resetPasswordForEmail(email);
-    if (error) throw error;
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email);
+      if (error) throw error;
+    } catch (error) {
+      console.error("Error in resetPassword:", error);
+      throw error;
+    }
   };
 
   const value = {

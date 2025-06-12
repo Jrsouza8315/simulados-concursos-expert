@@ -9,6 +9,7 @@ import {
   Routes,
   Route,
   Navigate,
+  Outlet,
 } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
@@ -60,7 +61,13 @@ const App: React.FC = () => {
                 />
 
                 {/* Todas as outras rotas dentro do MainLayout */}
-                <Route element={<MainLayout>}>
+                <Route
+                  element={
+                    <MainLayout>
+                      <Outlet />
+                    </MainLayout>
+                  }
+                >
                   {/* Rota raiz com redirecionamento condicional */}
                   <Route
                     path="/"

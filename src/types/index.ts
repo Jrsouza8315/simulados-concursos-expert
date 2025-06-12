@@ -1,11 +1,11 @@
 import { User, Session } from "@supabase/supabase-js";
 import { UserRole } from "../contexts/AuthContext";
 
-interface UserProfile {
+export interface UserProfile {
   id: string;
   email: string;
   role: UserRole;
-  subscription_active: boolean | undefined;
+  subscription_active: boolean;
 }
 
 export interface AuthContextType {

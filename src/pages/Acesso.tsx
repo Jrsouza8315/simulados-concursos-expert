@@ -64,16 +64,9 @@ const Acesso = () => {
   // Redirect authenticated users to their dashboard
   useEffect(() => {
     if (user && userProfile) {
-      // Se já estiver na página de admin, não redirecionar novamente
-      if (window.location.hash === "#/admin") {
-        return;
-      }
-
       // Se for o email do admin, redirecionar para admin
       if (userProfile.email === "hbrcomercialssa@gmail.com") {
-        window.location.replace(
-          "https://jrsouza8315.github.io/simulados-concursos-expert/#/admin"
-        );
+        window.location.href = "/admin";
         return;
       }
 
@@ -85,9 +78,7 @@ const Acesso = () => {
       };
 
       const redirectTo = redirectMap[userProfile.role] || "/";
-      window.location.replace(
-        `https://jrsouza8315.github.io/simulados-concursos-expert/#${redirectTo}`
-      );
+      window.location.href = redirectTo;
     }
   }, [user, userProfile]);
 
@@ -126,11 +117,7 @@ const Acesso = () => {
       // Se for o email do admin, redirecionar imediatamente
       if (values.email === "hbrcomercialssa@gmail.com") {
         console.log("Admin login detectado, redirecionando...");
-        // Forçar redirecionamento imediato
-        const adminUrl =
-          "https://jrsouza8315.github.io/simulados-concursos-expert/#/admin";
-        console.log("Redirecionando para:", adminUrl);
-        window.location.replace(adminUrl);
+        window.location.href = "/admin";
         return;
       }
 
@@ -144,9 +131,7 @@ const Acesso = () => {
       const redirectTo = userProfile?.role
         ? redirectMap[userProfile.role] || "/"
         : "/";
-      const fullUrl = `https://jrsouza8315.github.io/simulados-concursos-expert/#${redirectTo}`;
-      console.log("Redirecionando usuário para:", fullUrl);
-      window.location.replace(fullUrl);
+      window.location.href = redirectTo;
     } catch (error: any) {
       console.error("Erro no login:", error);
       let errorMessage = "Erro ao fazer login. Verifique suas credenciais.";
