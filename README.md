@@ -1,73 +1,84 @@
-# Welcome to your Lovable project
+# Ponto Simulado
 
-## Project info
+## 📝 Sobre o Projeto
 
-**URL**: https://lovable.dev/projects/fd894455-39db-46b8-a1ad-d646e3907ae0
+Uma plataforma moderna e intuitiva para simulados de concursos públicos, desenvolvida com tecnologias de ponta para proporcionar uma experiência de estudo eficiente e personalizada.
 
-## How can I edit this code?
+### 🌟 Funcionalidades Principais
 
-There are several ways of editing your application.
+- Sistema de autenticação completo com Supabase
+- Recuperação de senha segura
+- Interface moderna e responsiva
+- Sistema de simulados personalizados
+- Acompanhamento de desempenho
+- Dashboard interativo
 
-**Use Lovable**
+## 🛠️ Tecnologias Utilizadas
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/fd894455-39db-46b8-a1ad-d646e3907ae0) and start prompting.
+- **React** - Framework JavaScript para construção da interface
+- **TypeScript** - Adiciona tipagem estática ao JavaScript
+- **Supabase** - Backend as a Service para autenticação e banco de dados
+- **Vite** - Build tool e servidor de desenvolvimento
+- **Tailwind CSS** - Framework CSS para estilização
+- **shadcn/ui** - Componentes de UI reutilizáveis
+- **React Router** - Gerenciamento de rotas
+- **Sonner** - Sistema de notificações toast
 
-Changes made via Lovable will be committed automatically to this repo.
+## 🚀 Como Executar o Projeto
 
-**Use your preferred IDE**
+### Pré-requisitos
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+- Node.js (recomendamos usar o nvm para instalação)
+- npm ou yarn
+- Git
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Passos para Execução
 
-Follow these steps:
+```bash
+# Clone o repositório
+git clone https://github.com/seu-usuario/simulados-concursos-expert.git
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+# Entre no diretório do projeto
+cd simulados-concursos-expert
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+# Instale as dependências
+npm install
 
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Inicie o servidor de desenvolvimento
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## 🔒 Variáveis de Ambiente
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+Crie um arquivo `.env` na raiz do projeto com as seguintes variáveis:
 
-**Use GitHub Codespaces**
+```env
+VITE_SUPABASE_URL=sua_url_do_supabase
+VITE_SUPABASE_ANON_KEY=sua_chave_anon_do_supabase
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## 📚 Documentação
 
-## What technologies are used for this project?
+Para mais informações sobre a estrutura do projeto e suas funcionalidades, consulte nossa [documentação detalhada](link-para-documentacao).
 
-This project is built with:
+## 🤝 Contribuindo
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+Contribuições são sempre bem-vindas! Para contribuir:
 
-## How can I deploy this project?
+1. Faça um fork do projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/NovaFeature`)
+3. Faça commit das suas alterações (`git commit -m 'Adiciona nova feature'`)
+4. Faça push para a branch (`git push origin feature/NovaFeature`)
+5. Abra um Pull Request
 
-Simply open [Lovable](https://lovable.dev/projects/fd894455-39db-46b8-a1ad-d646e3907ae0) and click on Share -> Publish.
+## 📫 Contato
 
-## Can I connect a custom domain to my Lovable project?
+Para dúvidas, sugestões ou problemas, por favor abra uma issue no GitHub ou entre em contato através do email: [seu-email@exemplo.com]
 
-Yes, you can!
+## 📄 Licença
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+---
+
+Desenvolvido com ❤️ pela equipe Ponto Simulado
