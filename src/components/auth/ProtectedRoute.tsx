@@ -39,9 +39,20 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   }
 
   if (requiredRole) {
-    if (requiredRole === "admin" && userProfile.role !== "admin") {
-      console.log("Tentativa de acesso não autorizado à área administrativa");
-      return <Navigate to={redirectTo} replace />;
+    if (requiredRole === "admin") {
+      const isAdmin =
+        userProfile.email === "hbrcomercialssa@gmail.com" ||
+        userProfile.role === "admin";
+      if (!isAdmin) {
+        console.log(
+          "Tentativa de acesso não autorizado à área administrativa:",
+          {
+            userEmail: userProfile.email,
+            userRole: userProfile.role,
+          }
+        );
+        return <Navigate to={redirectTo} replace />;
+      }
     }
 
     if (userProfile.role !== requiredRole) {

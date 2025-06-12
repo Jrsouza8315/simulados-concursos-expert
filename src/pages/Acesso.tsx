@@ -64,7 +64,20 @@ const Acesso = () => {
   // Redirect authenticated users to their dashboard
   useEffect(() => {
     if (user && userProfile) {
-      // Redirecionar para a página apropriada com base no papel do usuário
+      // Se já estiver na página de admin, não redirecionar novamente
+      if (window.location.hash === "#/admin") {
+        return;
+      }
+
+      // Se for o email do admin, redirecionar para admin
+      if (userProfile.email === "hbrcomercialssa@gmail.com") {
+        window.location.replace(
+          "https://jrsouza8315.github.io/simulados-concursos-expert/#/admin"
+        );
+        return;
+      }
+
+      // Para outros usuários
       const redirectMap = {
         admin: "/admin",
         assinante: "/dashboard",
@@ -72,9 +85,11 @@ const Acesso = () => {
       };
 
       const redirectTo = redirectMap[userProfile.role] || "/";
-      navigate(redirectTo);
+      window.location.replace(
+        `https://jrsouza8315.github.io/simulados-concursos-expert/#${redirectTo}`
+      );
     }
-  }, [user, userProfile, navigate]);
+  }, [user, userProfile]);
 
   // Form de login
   const loginForm = useForm({
@@ -101,7 +116,7 @@ const Acesso = () => {
       setLoading(true);
       const { user } = await signIn(values.email, values.senha);
 
-      // Adicionar log para debug
+      // Log para debug
       console.log("Login bem sucedido:", {
         user,
         userProfile,
@@ -110,29 +125,32 @@ const Acesso = () => {
 
       // Se for o email do admin, redirecionar imediatamente
       if (values.email === "hbrcomercialssa@gmail.com") {
-        // Forçar redirecionamento completo para o GitHub Pages
-        window.location.href =
+        console.log("Admin login detectado, redirecionando...");
+        // Forçar redirecionamento imediato
+        const adminUrl =
           "https://jrsouza8315.github.io/simulados-concursos-expert/#/admin";
+        console.log("Redirecionando para:", adminUrl);
+        window.location.replace(adminUrl);
         return;
       }
 
-      // Para outros usuários, o redirecionamento será feito pelo useEffect
+      // Para outros usuários
       const redirectMap = {
         admin: "/admin",
         assinante: "/dashboard",
         visitante: "/visitante",
       };
 
-      if (userProfile) {
-        const redirectTo = redirectMap[userProfile.role] || "/";
-        // Forçar redirecionamento completo para o GitHub Pages
-        window.location.href = `https://jrsouza8315.github.io/simulados-concursos-expert/#${redirectTo}`;
-      }
+      const redirectTo = userProfile?.role
+        ? redirectMap[userProfile.role] || "/"
+        : "/";
+      const fullUrl = `https://jrsouza8315.github.io/simulados-concursos-expert/#${redirectTo}`;
+      console.log("Redirecionando usuário para:", fullUrl);
+      window.location.replace(fullUrl);
     } catch (error: any) {
-      console.error("Login error:", error);
+      console.error("Erro no login:", error);
       let errorMessage = "Erro ao fazer login. Verifique suas credenciais.";
 
-      // Mensagens de erro mais específicas
       if (error.message.includes("Invalid login credentials")) {
         errorMessage = "Email ou senha incorretos.";
       } else if (error.message.includes("Email not confirmed")) {

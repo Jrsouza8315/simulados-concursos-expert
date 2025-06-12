@@ -66,14 +66,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.log("User profile loaded:", data);
         // Verificar se é o email do admin
         if (data.email === "hbrcomercialssa@gmail.com") {
+          console.log("Admin email detected, ensuring admin role");
           // Atualizar para admin se ainda não for
           if (data.role !== "admin") {
+            console.log("Updating user role to admin");
             const { error: updateError } = await supabase
               .from("user_profiles")
               .update({ role: "admin" })
               .eq("id", userId);
 
-            if (!updateError) {
+            if (updateError) {
+              console.error("Error updating admin role:", updateError);
+            } else {
+              console.log("Successfully updated to admin role");
               data.role = "admin";
             }
           }
@@ -85,6 +90,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           role: data.role as UserRole,
           subscription_active: data.subscription_active,
         };
+        console.log("Setting user profile:", profile);
         setUserProfile(profile);
       }
     } catch (error) {
