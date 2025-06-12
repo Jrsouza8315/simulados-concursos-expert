@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Button } from "./ui/button";
 import { Menu, User, Search, LogOut } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
@@ -48,7 +48,7 @@ const Header = () => {
           <div className="flex items-center -ml-3">
             <a href={getFullUrl("/")} className="flex items-center">
               <img
-                src="/simulados-concursos-expert/logo.png"
+                src="/ponto-simulado/logo.png"
                 alt="Ponto Simulado"
                 className="h-16 w-auto object-contain"
               />
