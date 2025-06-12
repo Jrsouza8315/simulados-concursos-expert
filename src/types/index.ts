@@ -5,7 +5,7 @@ interface UserProfile {
   id: string;
   email: string;
   role: UserRole;
-  subscription_active: boolean;
+  subscription_active: boolean | undefined;
 }
 
 export interface AuthContextType {

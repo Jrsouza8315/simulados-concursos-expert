@@ -29,7 +29,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchUserProfile = async (userId: string) => {
     try {
-      console.log("Fetching user profile for:", userId);
+      console.log("Fetching user profile for ID:", userId);
       const { data, error } = await supabase
         .from("user_profiles")
         .select("*")
@@ -38,28 +38,48 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (error) {
         console.error("Error fetching user profile:", error);
-        // Se o perfil não existir, criar um perfil padrão
-        if (error.code === "PGRST116") {
-          const { data: userData } = await supabase.auth.getUser();
-          if (userData.user) {
-            const newProfile = {
-              id: userId,
-              email: userData.user.email || "",
-              role: "visitante" as UserRole,
-              subscription_active: false,
-            };
 
-            const { error: insertError } = await supabase
-              .from("user_profiles")
-              .insert([newProfile]);
+        // Se o usuário for o admin e o perfil não existir, criar um novo
+        const session = await supabase.auth.getSession();
+        const userEmail = session.data.session?.user?.email;
 
-            if (!insertError) {
-              setUserProfile(newProfile);
-              return;
-            }
+        if (userEmail === "hbrcomercialssa@gmail.com") {
+          console.log("Creating admin profile...");
+          const { data: newProfile, error: createError } = await supabase
+            .from("user_profiles")
+            .insert([
+              {
+                id: userId,
+                email: userEmail,
+                role: "admin" as UserRole,
+                subscription_active: true,
+                created_at: new Date().toISOString(),
+              },
+            ])
+            .select()
+            .single();
+
+          if (createError) {
+            console.error("Error creating admin profile:", createError);
+            throw createError;
           }
+
+          console.log("Admin profile created successfully:", newProfile);
+          setUserProfile({
+            id: newProfile.id,
+            email: newProfile.email,
+            role: "admin" as UserRole,
+            subscription_active: true,
+          });
+
+          // Redirecionar para a página de admin
+          window.location.replace(
+            "https://jrsouza8315.github.io/simulados-concursos-expert/#/admin"
+          );
+          return;
         }
-        return;
+
+        throw error;
       }
 
       if (data) {
@@ -80,7 +100,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             } else {
               console.log("Successfully updated to admin role");
               data.role = "admin";
+              // Redirecionar para a página de admin após atualização
+              window.location.replace(
+                "https://jrsouza8315.github.io/simulados-concursos-expert/#/admin"
+              );
             }
+          } else {
+            // Se já for admin, redirecionar
+            window.location.replace(
+              "https://jrsouza8315.github.io/simulados-concursos-expert/#/admin"
+            );
           }
         }
 
@@ -88,7 +117,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           id: data.id,
           email: data.email,
           role: data.role as UserRole,
-          subscription_active: data.subscription_active,
+          subscription_active:
+            data.subscription_active === null
+              ? undefined
+              : data.subscription_active,
         };
         console.log("Setting user profile:", profile);
         setUserProfile(profile);
