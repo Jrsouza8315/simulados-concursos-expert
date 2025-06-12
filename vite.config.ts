@@ -5,7 +5,7 @@ import path from "path";
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: "/simulados-concursos-expert/",
+  base: "/",
   server: {
     port: 8080,
     host: true,
@@ -17,7 +17,7 @@ export default defineConfig({
     },
   },
   build: {
-    outDir: "docs",
+    outDir: "dist",
     emptyOutDir: true,
     sourcemap: true,
     rollupOptions: {
