@@ -3,6 +3,7 @@ import { Button } from "./ui/button";
 import { Menu, User, Search, LogOut } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { getFullUrl, getAssetUrl } from "../utils/url";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -12,8 +13,7 @@ const Header = () => {
   const handleSignOut = async () => {
     try {
       await signOut();
-      window.location.href =
-        "https://jrsouza8315.github.io/simulados-concursos-expert/#/";
+      window.location.href = getFullUrl("/");
     } catch (error) {
       console.error("Error signing out:", error);
     }
@@ -21,23 +21,19 @@ const Header = () => {
 
   const getDashboardLink = () => {
     if (userProfile?.email === "hbrcomercialssa@gmail.com") {
-      return "https://jrsouza8315.github.io/simulados-concursos-expert/#/admin";
+      return "/admin";
     }
 
     switch (userProfile?.role) {
       case "admin":
-        return "https://jrsouza8315.github.io/simulados-concursos-expert/#/admin";
+        return "/admin";
       case "assinante":
-        return "https://jrsouza8315.github.io/simulados-concursos-expert/#/dashboard";
+        return "/dashboard";
       case "visitante":
-        return "https://jrsouza8315.github.io/simulados-concursos-expert/#/visitante";
+        return "/visitante";
       default:
-        return "https://jrsouza8315.github.io/simulados-concursos-expert/#/";
+        return "/";
     }
-  };
-
-  const getFullUrl = (path: string) => {
-    return `https://jrsouza8315.github.io/simulados-concursos-expert/#${path}`;
   };
 
   return (
@@ -48,7 +44,7 @@ const Header = () => {
           <div className="flex items-center -ml-3">
             <a href={getFullUrl("/")} className="flex items-center">
               <img
-                src={`${import.meta.env.BASE_URL}logo.png`}
+                src={getAssetUrl("logo.png")}
                 alt="Ponto Simulado"
                 className="h-16 w-auto object-contain"
               />
@@ -91,7 +87,7 @@ const Header = () => {
             )}
             {user && (
               <a
-                href={getDashboardLink()}
+                href={getFullUrl(getDashboardLink())}
                 className="text-gray-700 hover:text-primary-600 transition-colors"
               >
                 {userProfile?.role === "admin" ? "Admin" : "Dashboard"}
@@ -204,7 +200,7 @@ const Header = () => {
               )}
               {user && (
                 <a
-                  href={getDashboardLink()}
+                  href={getFullUrl(getDashboardLink())}
                   className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
                 >
                   {userProfile?.role === "admin" ? "Admin" : "Dashboard"}

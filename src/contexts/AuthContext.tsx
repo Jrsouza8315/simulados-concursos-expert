@@ -8,6 +8,7 @@ import React, {
 import { supabase } from "../integrations/supabase/client";
 import type { User, Session } from "@supabase/supabase-js";
 import { AuthContextType, UserProfile } from "../types";
+import { getFullUrl } from "../utils/url";
 
 export type UserRole = "admin" | "assinante" | "visitante";
 
@@ -56,7 +57,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Se for o admin, redirecionar imediatamente
       if (email === "hbrcomercialssa@gmail.com") {
         console.log("Admin login detectado, redirecionando...");
-        window.location.href = "/admin";
+        window.location.href = getFullUrl("/admin");
         return data;
       }
 
@@ -118,7 +119,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           });
 
           // Redirecionar para a página de admin
-          window.location.href = "/admin";
+          window.location.href = getFullUrl("/admin");
           return;
         }
 
@@ -144,11 +145,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               console.log("Successfully updated to admin role");
               data.role = "admin";
               // Redirecionar para a página de admin após atualização
-              window.location.href = "/admin";
+              window.location.href = getFullUrl("/admin");
             }
           } else {
             // Se já for admin, redirecionar
-            window.location.href = "/admin";
+            window.location.href = getFullUrl("/admin");
           }
         }
 
