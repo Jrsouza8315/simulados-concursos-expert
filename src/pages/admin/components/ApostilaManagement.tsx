@@ -9,13 +9,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -28,15 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Plus,
-  Search,
-  RefreshCw,
-  Edit,
-  Trash2,
-  Download,
-  Eye,
-} from "lucide-react";
+import { Search, RefreshCw, Edit, Trash2, Download, Eye } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -54,14 +39,6 @@ export const ApostilaManagement = () => {
   const [showForm, setShowForm] = useState(false);
   const [editingApostila, setEditingApostila] = useState<Apostila | null>(null);
   const [uploading, setUploading] = useState(false);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [newApostila, setNewApostila] = useState<Partial<Apostila>>({
-    title: "",
-    description: "",
-    category: "",
-    file_url: "",
-  });
-
   const [formData, setFormData] = useState({
     titulo: "",
     descricao: "",
@@ -102,7 +79,9 @@ export const ApostilaManagement = () => {
     setFilteredApostilas(filtered);
   }, [searchTerm, apostilas]);
 
-  const handleFileUpload = async (file: File) => {
+  const handleFileUpload = async (
+    file: File
+  ): Promise<{ url: string; size: number }> => {
     try {
       setUploading(true);
       const fileExt = file.name.split(".").pop();
@@ -120,12 +99,14 @@ export const ApostilaManagement = () => {
         .getPublicUrl(filePath);
 
       if (urlData) {
-        setNewApostila({ ...newApostila, file_url: urlData.publicUrl });
         toast.success("Arquivo enviado com sucesso");
+        return { url: urlData.publicUrl, size: file.size };
       }
+      throw new Error("Erro ao obter URL pública");
     } catch (error) {
       console.error("Error uploading file:", error);
       toast.error("Erro ao enviar arquivo");
+      return { url: "", size: 0 };
     } finally {
       setUploading(false);
     }
@@ -136,14 +117,18 @@ export const ApostilaManagement = () => {
     try {
       const fileInput = document.querySelector<HTMLInputElement>("#arquivo");
       let arquivo_url = formData.arquivo_url;
+      let tamanho_bytes = 0;
 
       if (fileInput?.files?.length) {
-        arquivo_url = await handleFileUpload(fileInput.files[0]);
+        const { url, size } = await handleFileUpload(fileInput.files[0]);
+        arquivo_url = url;
+        tamanho_bytes = size;
       }
 
       const apostilaData = {
         ...formData,
         arquivo_url,
+        tamanho_bytes,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
@@ -186,10 +171,10 @@ export const ApostilaManagement = () => {
   const handleEdit = (apostila: Apostila) => {
     setEditingApostila(apostila);
     setFormData({
-      titulo: apostila.titulo,
-      descricao: apostila.descricao,
-      categoria: apostila.categoria,
-      arquivo_url: apostila.arquivo_url,
+      titulo: apostila.titulo || "",
+      descricao: apostila.descricao || "",
+      categoria: apostila.categoria || "",
+      arquivo_url: apostila.arquivo_url || "",
       active: apostila.active,
     });
     setShowForm(true);
@@ -218,33 +203,6 @@ export const ApostilaManagement = () => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
-  const handleCreateApostila = async () => {
-    try {
-      const { error } = await supabase.from("apostilas").insert([
-        {
-          ...newApostila,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-      ]);
-
-      if (error) throw error;
-
-      toast.success("Apostila criada com sucesso");
-      setIsDialogOpen(false);
-      setNewApostila({
-        title: "",
-        description: "",
-        category: "",
-        file_url: "",
-      });
-      fetchApostilas();
-    } catch (error) {
-      console.error("Error creating apostila:", error);
-      toast.error("Erro ao criar apostila");
-    }
-  };
-
   return (
     <div className="space-y-6">
       <Card>
@@ -256,7 +214,7 @@ export const ApostilaManagement = () => {
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Atualizar
               </Button>
-              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <Dialog open={showForm} onOpenChange={setShowForm}>
                 <DialogTrigger asChild>
                   <Button>Nova Apostila</Button>
                 </DialogTrigger>
@@ -269,11 +227,11 @@ export const ApostilaManagement = () => {
                       <Label htmlFor="title">Título</Label>
                       <Input
                         id="title"
-                        value={newApostila.title}
+                        value={formData.titulo}
                         onChange={(e) =>
-                          setNewApostila({
-                            ...newApostila,
-                            title: e.target.value,
+                          setFormData({
+                            ...formData,
+                            titulo: e.target.value,
                           })
                         }
                       />
@@ -282,11 +240,11 @@ export const ApostilaManagement = () => {
                       <Label htmlFor="description">Descrição</Label>
                       <Textarea
                         id="description"
-                        value={newApostila.description}
+                        value={formData.descricao}
                         onChange={(e) =>
-                          setNewApostila({
-                            ...newApostila,
-                            description: e.target.value,
+                          setFormData({
+                            ...formData,
+                            descricao: e.target.value,
                           })
                         }
                       />
@@ -295,11 +253,11 @@ export const ApostilaManagement = () => {
                       <Label htmlFor="category">Categoria</Label>
                       <Input
                         id="category"
-                        value={newApostila.category}
+                        value={formData.categoria}
                         onChange={(e) =>
-                          setNewApostila({
-                            ...newApostila,
-                            category: e.target.value,
+                          setFormData({
+                            ...formData,
+                            categoria: e.target.value,
                           })
                         }
                       />
@@ -322,11 +280,13 @@ export const ApostilaManagement = () => {
                   <div className="flex justify-end gap-2">
                     <Button
                       variant="outline"
-                      onClick={() => setIsDialogOpen(false)}
+                      onClick={() => setShowForm(false)}
                     >
                       Cancelar
                     </Button>
-                    <Button onClick={handleCreateApostila}>Criar</Button>
+                    <Button type="submit" disabled={uploading}>
+                      {uploading ? "Enviando..." : "Cadastrar"}
+                    </Button>
                   </div>
                 </DialogContent>
               </Dialog>

@@ -1,17 +1,11 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from "../../components/ui/card";
-import {
-  Users,
-  BookOpen,
-  BarChart3,
-  FileText,
-  BookOpenCheck,
-} from "lucide-react";
+import { Users, BarChart3, FileText, BookOpenCheck } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import { supabase } from "../../integrations/supabase/client";
 import {
@@ -20,7 +14,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "../../components/ui/tabs";
-import { AdminDashboardStats } from "../../types/admin";
+import { AdminDashboardStats, ActivityLog } from "../../types/admin";
 import { UserManagement } from "./components/UserManagement";
 import { QuestionManagement } from "./components/QuestionManagement";
 import { ConcursoManagement } from "./components/ConcursoManagement";
@@ -39,9 +33,8 @@ const AdminDashboard = () => {
     totalQuestions: 0,
     totalConcursos: 0,
     totalApostilas: 0,
-    recentActivity: [],
+    recentActivity: [] as ActivityLog[],
   });
-  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("dashboard");
 
   useEffect(() => {
@@ -61,8 +54,6 @@ const AdminDashboard = () => {
 
   const fetchStats = async () => {
     try {
-      setLoading(true);
-
       // Buscar estatísticas de usuários
       const { data: usersData } = await supabase
         .from("user_profiles")
@@ -98,12 +89,10 @@ const AdminDashboard = () => {
         totalQuestions: questionsData?.length || 0,
         totalConcursos: concursosData?.length || 0,
         totalApostilas: apostilasData?.length || 0,
-        recentActivity: recentActivityData || [],
+        recentActivity: (recentActivityData || []) as ActivityLog[],
       });
     } catch (error) {
       console.error("Error fetching stats:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -130,9 +119,7 @@ const AdminDashboard = () => {
                 {userProfile?.email}
               </span>
             </div>
-            <Button variant="outline" onClick={handleSignOut}>
-              Sair
-            </Button>
+            <Button onClick={handleSignOut}>Sair</Button>
           </div>
         </div>
       </header>
@@ -222,7 +209,7 @@ const AdminDashboard = () => {
                       className="flex items-center justify-between"
                     >
                       <div className="flex items-center gap-2">
-                        <Badge variant="outline">{activity.action}</Badge>
+                        <Badge>{activity.action}</Badge>
                         <span>{activity.details}</span>
                       </div>
                       <span className="text-sm text-muted-foreground">

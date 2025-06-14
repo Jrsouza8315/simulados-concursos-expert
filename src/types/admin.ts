@@ -1,36 +1,28 @@
-export interface Question {
-  id: string;
-  title: string;
-  content: string;
-  answer: string;
-  explanation: string;
-  category: string;
-  difficulty: "easy" | "medium" | "hard";
-  created_at: string;
-  updated_at: string;
-}
+import { Database } from "@/integrations/supabase/types";
 
-export interface Concurso {
-  id: string;
-  title: string;
-  description: string;
-  organization: string;
-  status: "open" | "closed";
-  start_date: string;
-  end_date: string;
-  created_at: string;
-  updated_at: string;
-}
+export type Question = Database["public"]["Tables"]["questions"]["Row"];
+export type QuestionInsert =
+  Database["public"]["Tables"]["questions"]["Insert"];
+export type QuestionUpdate =
+  Database["public"]["Tables"]["questions"]["Update"];
 
-export interface Apostila {
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  file_url: string;
-  created_at: string;
-  updated_at: string;
-}
+export type Concurso = Database["public"]["Tables"]["concursos"]["Row"];
+export type ConcursoInsert =
+  Database["public"]["Tables"]["concursos"]["Insert"];
+export type ConcursoUpdate =
+  Database["public"]["Tables"]["concursos"]["Update"];
+
+export type Apostila = Database["public"]["Tables"]["apostilas"]["Row"];
+export type ApostilaInsert =
+  Database["public"]["Tables"]["apostilas"]["Insert"];
+export type ApostilaUpdate =
+  Database["public"]["Tables"]["apostilas"]["Update"];
+
+export type ActivityLog = Database["public"]["Tables"]["activity_log"]["Row"];
+export type ActivityLogInsert =
+  Database["public"]["Tables"]["activity_log"]["Insert"];
+export type ActivityLogUpdate =
+  Database["public"]["Tables"]["activity_log"]["Update"];
 
 export interface Simulado {
   id: string;
@@ -55,17 +47,11 @@ export interface SimuladoResponse {
   created_at: string;
 }
 
-export interface UserProfile {
-  id: string;
-  email: string;
-  role: "admin" | "assinante" | "visitante";
-  subscription_active: boolean;
-  created_at: string;
-  updated_at: string;
-  last_login?: string;
-  name?: string;
-  avatar_url?: string;
-}
+export type UserProfile = Database["public"]["Tables"]["user_profiles"]["Row"];
+export type UserProfileInsert =
+  Database["public"]["Tables"]["user_profiles"]["Insert"];
+export type UserProfileUpdate =
+  Database["public"]["Tables"]["user_profiles"]["Update"];
 
 export interface AdminDashboardStats {
   totalUsers: number;
@@ -75,12 +61,4 @@ export interface AdminDashboardStats {
   totalConcursos: number;
   totalApostilas: number;
   recentActivity: ActivityLog[];
-}
-
-export interface ActivityLog {
-  id: string;
-  user_id: string;
-  action: string;
-  details: string;
-  created_at: string;
 }
