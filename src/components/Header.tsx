@@ -3,11 +3,11 @@ import { Button } from "./ui/button";
 import { Menu, User, Search, LogOut } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import { getFullUrl, getAssetUrl } from "../utils/url";
+import { getFullUrl } from "../utils/url";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { user, userProfile, signOut } = useAuth();
+  const { userProfile, signOut } = useAuth();
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
@@ -44,7 +44,7 @@ const Header = () => {
           <div className="flex items-center -ml-3">
             <a href={getFullUrl("/")} className="flex items-center">
               <img
-                src={getAssetUrl("logo.png")}
+                src="/simulados-concursos-expert/logo.png"
                 alt="Ponto Simulado"
                 className="h-16 w-auto object-contain"
               />
@@ -77,7 +77,7 @@ const Header = () => {
             >
               Apostilas
             </a>
-            {!user && (
+            {!userProfile && (
               <a
                 href={getFullUrl("/planos")}
                 className="text-gray-700 hover:text-primary-600 transition-colors"
@@ -85,12 +85,12 @@ const Header = () => {
                 Planos
               </a>
             )}
-            {user && (
+            {userProfile && (
               <a
                 href={getFullUrl(getDashboardLink())}
                 className="text-gray-700 hover:text-primary-600 transition-colors"
               >
-                {userProfile?.role === "admin" ? "Admin" : "Dashboard"}
+                {userProfile.role === "admin" ? "Admin" : "Dashboard"}
               </a>
             )}
           </nav>
@@ -106,11 +106,11 @@ const Header = () => {
               Buscar
             </Button>
 
-            {user ? (
+            {userProfile ? (
               <div className="flex items-center gap-3">
                 <span className="text-sm text-gray-600">
-                  {userProfile?.email}
-                  {userProfile?.role && (
+                  {userProfile.email}
+                  {userProfile.role && (
                     <span className="ml-2 px-2 py-1 bg-primary-100 text-primary-800 text-xs rounded capitalize">
                       {userProfile.role}
                     </span>
@@ -190,7 +190,7 @@ const Header = () => {
               >
                 Apostilas
               </a>
-              {!user && (
+              {!userProfile && (
                 <a
                   href={getFullUrl("/planos")}
                   className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
@@ -198,12 +198,12 @@ const Header = () => {
                   Planos
                 </a>
               )}
-              {user && (
+              {userProfile && (
                 <a
                   href={getFullUrl(getDashboardLink())}
                   className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
                 >
-                  {userProfile?.role === "admin" ? "Admin" : "Dashboard"}
+                  {userProfile.role === "admin" ? "Admin" : "Dashboard"}
                 </a>
               )}
             </div>
