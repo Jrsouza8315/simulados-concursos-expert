@@ -13,7 +13,8 @@ const Header = () => {
   const handleSignOut = async () => {
     try {
       await signOut();
-      window.location.href = getFullUrl("/");
+      window.location.href =
+        "https://jrsouza8315.github.io/simulados-concursos-expert/";
     } catch (error) {
       console.error("Error signing out:", error);
     }
@@ -21,18 +22,18 @@ const Header = () => {
 
   const getDashboardLink = () => {
     if (userProfile?.email === "hbrcomercialssa@gmail.com") {
-      return "/admin";
+      return "https://jrsouza8315.github.io/simulados-concursos-expert/admin.html";
     }
 
     switch (userProfile?.role) {
       case "admin":
-        return "/admin";
+        return "https://jrsouza8315.github.io/simulados-concursos-expert/admin.html";
       case "assinante":
-        return "/dashboard";
+        return "https://jrsouza8315.github.io/simulados-concursos-expert/dashboard.html";
       case "visitante":
-        return "/visitante";
+        return "https://jrsouza8315.github.io/simulados-concursos-expert/visitante.html";
       default:
-        return "/";
+        return "https://jrsouza8315.github.io/simulados-concursos-expert/";
     }
   };
 

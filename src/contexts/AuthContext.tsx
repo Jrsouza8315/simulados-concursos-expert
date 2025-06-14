@@ -74,7 +74,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       // Se for o admin, redirecionar imediatamente
       if (email === "hbrcomercialssa@gmail.com") {
         console.log("Admin login detectado, redirecionando...");
-        window.location.href = getFullUrl("/admin");
+        window.location.href =
+          "https://jrsouza8315.github.io/simulados-concursos-expert/admin.html";
         return data;
       }
 
@@ -136,7 +137,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           });
 
           // Redirecionar para a página de admin
-          window.location.href = getFullUrl("/admin");
+          window.location.href =
+            "https://jrsouza8315.github.io/simulados-concursos-expert/admin.html";
           return;
         }
 
@@ -162,11 +164,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
               console.log("Successfully updated to admin role");
               data.role = "admin";
               // Redirecionar para a página de admin após atualização
-              window.location.href = getFullUrl("/admin");
+              window.location.href =
+                "https://jrsouza8315.github.io/simulados-concursos-expert/admin.html";
             }
           } else {
             // Se já for admin, redirecionar
-            window.location.href = getFullUrl("/admin");
+            window.location.href =
+              "https://jrsouza8315.github.io/simulados-concursos-expert/admin.html";
           }
         }
 

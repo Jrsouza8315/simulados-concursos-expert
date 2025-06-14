@@ -66,18 +66,24 @@ const Acesso = () => {
     if (user && userProfile) {
       // Se for o email do admin, redirecionar para admin
       if (userProfile.email === "hbrcomercialssa@gmail.com") {
-        window.location.href = "/admin";
+        window.location.href =
+          "https://jrsouza8315.github.io/simulados-concursos-expert/admin.html";
         return;
       }
 
       // Para outros usuários
       const redirectMap = {
-        admin: "/admin",
-        assinante: "/dashboard",
-        visitante: "/visitante",
+        admin:
+          "https://jrsouza8315.github.io/simulados-concursos-expert/admin.html",
+        assinante:
+          "https://jrsouza8315.github.io/simulados-concursos-expert/dashboard.html",
+        visitante:
+          "https://jrsouza8315.github.io/simulados-concursos-expert/visitante.html",
       };
 
-      const redirectTo = redirectMap[userProfile.role] || "/";
+      const redirectTo =
+        redirectMap[userProfile.role] ||
+        "https://jrsouza8315.github.io/simulados-concursos-expert/";
       window.location.href = redirectTo;
     }
   }, [user, userProfile]);
@@ -117,20 +123,25 @@ const Acesso = () => {
       // Se for o email do admin, redirecionar imediatamente
       if (values.email === "hbrcomercialssa@gmail.com") {
         console.log("Admin login detectado, redirecionando...");
-        window.location.href = "/admin";
+        window.location.href =
+          "https://jrsouza8315.github.io/simulados-concursos-expert/admin.html";
         return;
       }
 
       // Para outros usuários
       const redirectMap = {
-        admin: "/admin",
-        assinante: "/dashboard",
-        visitante: "/visitante",
+        admin:
+          "https://jrsouza8315.github.io/simulados-concursos-expert/admin.html",
+        assinante:
+          "https://jrsouza8315.github.io/simulados-concursos-expert/dashboard.html",
+        visitante:
+          "https://jrsouza8315.github.io/simulados-concursos-expert/visitante.html",
       };
 
       const redirectTo = userProfile?.role
-        ? redirectMap[userProfile.role] || "/"
-        : "/";
+        ? redirectMap[userProfile.role] ||
+          "https://jrsouza8315.github.io/simulados-concursos-expert/"
+        : "https://jrsouza8315.github.io/simulados-concursos-expert/";
       window.location.href = redirectTo;
     } catch (error: any) {
       console.error("Erro no login:", error);
