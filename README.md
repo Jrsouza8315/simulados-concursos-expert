@@ -1,83 +1,112 @@
-# Ponto Simulado
+# Ponto Simulado - Sistema de Simulados para Concursos
 
-## 📝 Sobre o Projeto
+Sistema completo para gerenciamento de simulados, questões e apostilas para concursos públicos.
 
-Uma plataforma moderna e intuitiva para simulados de concursos públicos, desenvolvida com tecnologias de ponta para proporcionar uma experiência de estudo eficiente e personalizada.
+## 🚀 Funcionalidades
 
-### 🌟 Funcionalidades Principais
-
-- Sistema de autenticação completo com Supabase
-- Recuperação de senha segura
-- Interface moderna e responsiva
-- Sistema de simulados personalizados
-- Acompanhamento de desempenho
-- Dashboard interativo
+- Dashboard administrativo com estatísticas
+- Cadastro de questões com suporte a HTML e LaTeX
+- Upload de apostilas em PDF
+- Geração de simulados personalizados
+- Sistema de autenticação e autorização
+- Interface responsiva e moderna
 
 ## 🛠️ Tecnologias Utilizadas
 
-- **React** - Framework JavaScript para construção da interface
-- **TypeScript** - Adiciona tipagem estática ao JavaScript
-- **Supabase** - Backend as a Service para autenticação e banco de dados
-- **Vite** - Build tool e servidor de desenvolvimento
-- **Tailwind CSS** - Framework CSS para estilização
-- **shadcn/ui** - Componentes de UI reutilizáveis
-- **React Router** - Gerenciamento de rotas
-- **Sonner** - Sistema de notificações toast
+- React + TypeScript
+- Vite
+- Tailwind CSS
+- Supabase (Auth, Database, Storage)
+- TinyMCE Editor
+- Recharts (Gráficos)
 
-## 🚀 Como Executar o Projeto
+## 📋 Pré-requisitos
 
-### Pré-requisitos
+- Node.js 16+
+- NPM ou Yarn
+- Conta no Supabase
+- Chave de API do TinyMCE
 
-- Node.js (recomendamos usar o nvm para instalação)
-- npm ou yarn
-- Git
+## 🔧 Instalação
 
-### Passos para Execução
+1. Clone o repositório:
 
 ```bash
-# Clone o repositório
-git clone https://github.com/seu-usuario/simulados-concursos-expert.git
-
-# Entre no diretório do projeto
-cd simulados-concursos-expert
-
-# Instale as dependências
-npm install
-
-# Inicie o servidor de desenvolvimento
-npm run dev
+git clone https://github.com/seu-usuario/ponto-simulado.git
+cd ponto-simulado
 ```
 
-## 🔒 Variáveis de Ambiente
+2. Instale as dependências:
 
-Crie um arquivo `.env` na raiz do projeto com as seguintes variáveis:
+```bash
+npm install
+# ou
+yarn install
+```
+
+3. Configure as variáveis de ambiente:
+   Crie um arquivo `.env` na raiz do projeto com as seguintes variáveis:
 
 ```env
 VITE_SUPABASE_URL=sua_url_do_supabase
-VITE_SUPABASE_ANON_KEY=sua_chave_anon_do_supabase
+VITE_SUPABASE_ANON_KEY=sua_chave_anonima_do_supabase
+VITE_TINYMCE_API_KEY=sua_chave_do_tinymce
 ```
 
-## 📚 Documentação
+4. Execute as migrações do Supabase:
 
-Para mais informações sobre a estrutura do projeto e suas funcionalidades, consulte nossa [documentação detalhada](link-para-documentacao).
+```bash
+npx supabase db push
+```
 
-## 🤝 Contribuindo
+5. Inicie o servidor de desenvolvimento:
 
-Contribuições são sempre bem-vindas! Para contribuir:
+```bash
+npm run dev
+# ou
+yarn dev
+```
+
+## 📦 Estrutura do Projeto
+
+```
+src/
+  ├── components/     # Componentes reutilizáveis
+  ├── pages/         # Páginas da aplicação
+  ├── lib/           # Configurações e utilitários
+  ├── types/         # Definições de tipos
+  ├── contexts/      # Contextos do React
+  ├── hooks/         # Hooks personalizados
+  └── styles/        # Estilos globais
+```
+
+## 🔐 Configuração do Supabase
+
+1. Crie um novo projeto no Supabase
+2. Execute o arquivo de migração em `supabase/migrations/20240320000000_create_tables.sql`
+3. Configure as políticas de segurança (RLS) conforme definido no arquivo de migração
+4. Crie um bucket de storage chamado 'apostilas' para armazenar os PDFs
+
+## 👥 Papéis de Usuário
+
+- **Admin**: Acesso completo ao sistema, incluindo cadastro de questões e apostilas
+- **Usuário**: Acesso aos simulados e apostilas disponíveis
+
+## 📝 Licença
+
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+
+## 🤝 Contribuição
 
 1. Faça um fork do projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/NovaFeature`)
-3. Faça commit das suas alterações (`git commit -m 'Adiciona nova feature'`)
-4. Faça push para a branch (`git push origin feature/NovaFeature`)
+2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
+3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+4. Push para a branch (`git push origin feature/AmazingFeature`)
 5. Abra um Pull Request
 
 ## 📫 Contato
 
 Para dúvidas, sugestões ou problemas, por favor abra uma issue no GitHub ou entre em contato através do email: [seu-email@exemplo.com]
-
-## 📄 Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
 ---
 
