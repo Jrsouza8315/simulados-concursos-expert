@@ -31,7 +31,7 @@ import NotFound from "./pages/NotFound";
 import Home from "./pages/Home";
 import ResetSenha from "./pages/ResetSenha";
 import Dashboard from "./pages/Dashboard";
-import { AdminPage } from "./pages/Admin";
+import { AdminPage } from "./pages/admin";
 
 const queryClient = new QueryClient();
 
@@ -114,11 +114,9 @@ const App: React.FC = () => {
                     }
                   />
 
-                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  {/* Rota 404 */}
                   <Route path="*" element={<NotFound />} />
                 </Route>
-
-                <Route path="/admin/*" element={<AdminPage />} />
               </Routes>
             </Router>
           </AuthProvider>
