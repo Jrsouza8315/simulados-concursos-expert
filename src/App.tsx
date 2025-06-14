@@ -15,23 +15,19 @@ import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import { MainLayout } from "./components/layout/MainLayout";
 
-import Index from "./pages/Index";
 import Simulados from "./pages/Simulados";
 import Concursos from "./pages/Concursos";
 import Apostilas from "./pages/Apostilas";
 import Planos from "./pages/Planos";
 import Acesso from "./pages/Acesso";
-import ResetPassword from "./pages/ResetPassword";
 import EsqueceuSenha from "./pages/EsqueceuSenha";
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import AssinanteDashboard from "./pages/assinante/AssinanteDashboard";
+import { AdminPage } from "./pages/admin";
 import VisitanteDashboard from "./pages/visitante/VisitanteDashboard";
 import Unauthorized from "./pages/Unauthorized";
 import NotFound from "./pages/NotFound";
 import Home from "./pages/Home";
 import ResetSenha from "./pages/ResetSenha";
 import Dashboard from "./pages/Dashboard";
-import { AdminPage } from "./pages/admin";
 
 const queryClient = new QueryClient();
 
@@ -59,7 +55,7 @@ const App: React.FC = () => {
                       requiredRole="admin"
                       redirectTo="/unauthorized"
                     >
-                      <AdminDashboard />
+                      <AdminPage />
                     </ProtectedRoute>
                   }
                 />
