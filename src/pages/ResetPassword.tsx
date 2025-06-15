@@ -15,6 +15,7 @@ import {
 import { supabase } from "../integrations/supabase/client";
 import { AlertCircle, CheckCircle2, AlertTriangle } from "lucide-react";
 import { Link } from "react-router-dom";
+import { v4 as uuidv4 } from "uuid";
 
 const ResetPassword: React.FC = () => {
   const [password, setPassword] = useState("");
@@ -167,9 +168,9 @@ const ResetPassword: React.FC = () => {
             .from("user_profiles")
             .insert([
               {
-                id: data.session.user.id,
-                email: data.session.user.email,
-                role: "visitante",
+                id: uuidv4(),
+                email: data.session.user.email || "",
+                role: "user",
                 subscription_active: false,
                 created_at: new Date().toISOString(),
               },

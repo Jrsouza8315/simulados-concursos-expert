@@ -110,7 +110,7 @@ export const mockSupabase = {
       }),
     }),
     update: (data: any) => ({
-      eq: (column: string, value: string) => {
+      eq: (_column: string, value: string) => {
         if (table === "user_profiles") {
           const userIndex = mockUsers.findIndex((u) => u.id === value);
           if (userIndex !== -1) {

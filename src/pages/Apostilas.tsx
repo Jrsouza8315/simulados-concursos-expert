@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Download, Filter, Book, Star } from "lucide-react";
 import {
@@ -15,13 +14,6 @@ import {
 import Header from "@/components/Header";
 
 const Apostilas = () => {
-  const [selectedFilters, setSelectedFilters] = useState({
-    categoria: "",
-    nivel: "",
-    banca: "",
-    preco: "",
-  });
-
   const apostilas = [
     {
       title: "Direito Constitucional Completo",

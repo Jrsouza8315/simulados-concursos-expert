@@ -39,12 +39,12 @@ import { Label } from "@/components/ui/label";
 
 export const ConcursoManagement = () => {
   const [concursos, setConcursos] = useState<Concurso[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [selectedConcurso, setSelectedConcurso] = useState<Concurso | null>(
+    null
+  );
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredConcursos, setFilteredConcursos] = useState<Concurso[]>([]);
   const [showForm, setShowForm] = useState(false);
-  const [editingConcurso, setEditingConcurso] = useState<Concurso | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const [formData, setFormData] = useState({
     titulo: "",
@@ -58,7 +58,6 @@ export const ConcursoManagement = () => {
 
   const fetchConcursos = async () => {
     try {
-      setLoading(true);
       const { data, error } = await supabase
         .from("concursos")
         .select("*")
@@ -70,8 +69,6 @@ export const ConcursoManagement = () => {
     } catch (error) {
       console.error("Error fetching concursos:", error);
       toast.error("Erro ao carregar concursos");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -97,14 +94,14 @@ export const ConcursoManagement = () => {
         updated_at: new Date().toISOString(),
       };
 
-      if (editingConcurso) {
+      if (selectedConcurso) {
         const { error } = await supabase
           .from("concursos")
           .update({
             ...concursoData,
             updated_at: new Date().toISOString(),
           })
-          .eq("id", editingConcurso.id);
+          .eq("id", selectedConcurso.id);
 
         if (error) throw error;
         toast.success("Concurso atualizado com sucesso");
@@ -126,7 +123,7 @@ export const ConcursoManagement = () => {
         link_edital: "",
       });
       setShowForm(false);
-      setEditingConcurso(null);
+      setSelectedConcurso(null);
       fetchConcursos();
     } catch (error) {
       console.error("Error saving concurso:", error);
@@ -135,7 +132,7 @@ export const ConcursoManagement = () => {
   };
 
   const handleEdit = (concurso: Concurso) => {
-    setEditingConcurso(concurso);
+    setSelectedConcurso(concurso);
     setFormData({
       titulo: concurso.titulo || "",
       organizadora: concurso.organizadora || "",
@@ -219,7 +216,7 @@ export const ConcursoManagement = () => {
               <DialogContent>
                 <DialogHeader>
                   <DialogTitle>
-                    {editingConcurso ? "Editar Concurso" : "Novo Concurso"}
+                    {selectedConcurso ? "Editar Concurso" : "Novo Concurso"}
                   </DialogTitle>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -349,7 +346,7 @@ export const ConcursoManagement = () => {
                       Cancelar
                     </Button>
                     <Button type="submit">
-                      {editingConcurso ? "Atualizar" : "Cadastrar"}
+                      {selectedConcurso ? "Atualizar" : "Cadastrar"}
                     </Button>
                   </div>
                 </form>

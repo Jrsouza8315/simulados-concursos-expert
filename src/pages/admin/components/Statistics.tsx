@@ -45,19 +45,19 @@ export function Statistics() {
       const questoesPorAssunto = await supabase
         .from("questions")
         .select("assunto, count(*) as total")
-        .group("assunto");
+        .order("total", { ascending: false });
 
       // Buscar questões por nível
       const questoesPorNivel = await supabase
         .from("questions")
         .select("nivel, count(*) as total")
-        .group("nivel");
+        .order("total", { ascending: false });
 
       // Buscar simulados por mês
       const simuladosPorMes = await supabase
         .from("simulados")
         .select("created_at, count(*) as total")
-        .group("created_at");
+        .order("created_at", { ascending: false });
 
       // Buscar usuários ativos (últimos 30 dias)
       const thirtyDaysAgo = new Date();
@@ -78,9 +78,21 @@ export function Statistics() {
         .select("*", { count: "exact", head: true });
 
       setStats({
-        questoesPorAssunto: questoesPorAssunto || [],
-        questoesPorNivel: questoesPorNivel || [],
-        simuladosPorMes: simuladosPorMes || [],
+        questoesPorAssunto:
+          (questoesPorAssunto?.data as unknown as {
+            assunto: string;
+            total: number;
+          }[]) || [],
+        questoesPorNivel:
+          (questoesPorNivel?.data as unknown as {
+            nivel: string;
+            total: number;
+          }[]) || [],
+        simuladosPorMes:
+          (simuladosPorMes?.data as unknown as {
+            mes: string;
+            total: number;
+          }[]) || [],
         usuariosAtivos: usuariosAtivos || 0,
         totalQuestoes: totalQuestoes || 0,
         totalSimulados: totalSimulados || 0,
@@ -158,7 +170,7 @@ export function Statistics() {
                   outerRadius={100}
                   label
                 >
-                  {stats.questoesPorNivel.map((entry, index) => (
+                  {stats.questoesPorNivel.map((_, index) => (
                     <Cell
                       key={`cell-${index}`}
                       fill={COLORS[index % COLORS.length]}
