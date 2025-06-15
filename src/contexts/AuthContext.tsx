@@ -7,17 +7,35 @@ import React, {
 } from "react";
 import { supabase } from "../integrations/supabase/client";
 import type { User, Session } from "@supabase/supabase-js";
-import { AuthContextType, UserProfile } from "../types";
+import { UserProfile } from "../types";
 import { getFullUrl } from "../utils/url";
 import { toast } from "sonner";
 
 export type UserRole = "admin" | "assinante" | "visitante";
 
 interface AuthContextType {
+  user: User | null;
   userProfile: UserProfile | null;
-  signIn: (email: string, password: string) => Promise<void>;
-  signOut: () => Promise<void>;
+  session: Session | null;
   loading: boolean;
+  error: Error | null;
+  signIn: (
+    email: string,
+    password: string
+  ) => Promise<{
+    user: User | null;
+    session: Session | null;
+  }>;
+  signUp: (
+    email: string,
+    password: string,
+    role?: UserRole
+  ) => Promise<{
+    user: User | null;
+    session: Session | null;
+  }>;
+  signOut: () => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -71,17 +89,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       if (error) throw error;
 
-      // Se for o admin, redirecionar imediatamente
-      if (email === "hbrcomercialssa@gmail.com") {
-        console.log("Admin login detectado, redirecionando...");
-        window.location.href =
-          "https://jrsouza8315.github.io/simulados-concursos-expert/admin.html";
-        return data;
-      }
-
       // Fetch user profile immediately after sign in
       if (data.user) {
-        await fetchUserProfile(data.user.id);
+        const { data: profile, error: profileError } = await supabase
+          .from("user_profiles")
+          .select("*")
+          .eq("id", data.user.id)
+          .single();
+
+        if (profileError) {
+          console.error("Error fetching user profile:", profileError);
+          throw profileError;
+        }
+
+        // Ensure profile role is of type UserRole
+        const userProfile: UserProfile = {
+          id: profile.id,
+          email: profile.email,
+          role: profile.role as UserRole,
+          subscription_active: profile.subscription_active || false,
+        };
+
+        setUserProfile(userProfile);
+
+        // Check if user is admin and redirect accordingly
+        if (userProfile.role === "admin") {
+          console.log("Admin login detected, redirecionando...");
+          window.location.href = "/#/admin";
+          return data;
+        }
+
+        // Redirect regular users to dashboard
+        window.location.href = "/#/dashboard";
       }
 
       return data;
