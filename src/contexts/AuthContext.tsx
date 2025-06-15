@@ -21,8 +21,7 @@ interface AuthContextType {
   }>;
   signUp: (
     email: string,
-    password: string,
-    role?: UserRole
+    password: string
   ) => Promise<{
     user: User | null;
     session: Session | null;
@@ -40,19 +39,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error] = useState<Error | null>(null);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     // Verificar sessão atual
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchUserProfile(session.user.id);
-      } else {
+    const initializeAuth = async () => {
+      try {
+        setLoading(true);
+        const {
+          data: { session },
+          error: sessionError,
+        } = await supabase.auth.getSession();
+
+        if (sessionError) {
+          throw sessionError;
+        }
+
+        setSession(session);
+        setUser(session?.user ?? null);
+
+        if (session?.user) {
+          await fetchUserProfile(session.user.id);
+        }
+      } catch (err) {
+        console.error("Error initializing auth:", err);
+        setError(
+          err instanceof Error ? err : new Error("Failed to initialize auth")
+        );
+        toast.error("Erro ao inicializar autenticação");
+      } finally {
         setLoading(false);
       }
-    });
+    };
+
+    initializeAuth();
 
     // Escutar mudanças de auth
     const {
@@ -60,12 +80,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("Auth state changed:", event, session?.user?.email);
 
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        await fetchUserProfile(session.user.id);
-      } else {
-        setUserProfile(null);
+      try {
+        setLoading(true);
+        setSession(session);
+        setUser(session?.user ?? null);
+
+        if (session?.user) {
+          await fetchUserProfile(session.user.id);
+        } else {
+          setUserProfile(null);
+        }
+      } catch (err) {
+        console.error("Error handling auth state change:", err);
+        setError(
+          err instanceof Error
+            ? err
+            : new Error("Failed to handle auth state change")
+        );
+        toast.error("Erro ao atualizar estado de autenticação");
+      } finally {
         setLoading(false);
       }
     });
@@ -75,6 +108,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const signIn = async (email: string, password: string) => {
     try {
+      setLoading(true);
+      setError(null);
+
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -119,12 +155,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       return data;
     } catch (error) {
       console.error("Error in signIn:", error);
+      setError(error instanceof Error ? error : new Error("Failed to sign in"));
+      toast.error("Erro ao fazer login");
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
   const fetchUserProfile = async (userId: string) => {
     try {
+      setLoading(true);
+      setError(null);
+
       console.log("Fetching user profile for ID:", userId);
       const { data, error } = await supabase
         .from("user_profiles")
@@ -169,8 +212,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           });
 
           // Redirecionar para a página de admin
-          window.location.href =
-            "https://jrsouza8315.github.io/simulados-concursos-expert/admin.html";
+          window.location.href = "/#/admin";
           return;
         }
 
@@ -192,43 +234,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
             if (updateError) {
               console.error("Error updating admin role:", updateError);
+              throw updateError;
             } else {
               console.log("Successfully updated to admin role");
               data.role = "admin";
               // Redirecionar para a página de admin após atualização
-              window.location.href =
-                "https://jrsouza8315.github.io/simulados-concursos-expert/admin.html";
+              window.location.href = "/#/admin";
             }
-          } else {
-            // Se já for admin, redirecionar
-            window.location.href =
-              "https://jrsouza8315.github.io/simulados-concursos-expert/admin.html";
           }
         }
 
-        const profile: UserProfile = {
+        setUserProfile({
           id: data.id,
           email: data.email,
           role: data.role as UserRole,
           subscription_active: data.subscription_active || false,
-        };
-        console.log("Setting user profile:", profile);
-        setUserProfile(profile);
+        });
       }
-    } catch (error) {
-      console.error("Error in fetchUserProfile:", error);
+    } catch (err) {
+      console.error("Error in fetchUserProfile:", err);
+      setError(
+        err instanceof Error ? err : new Error("Failed to fetch user profile")
+      );
       toast.error("Erro ao carregar perfil do usuário");
+      throw err;
     } finally {
       setLoading(false);
     }
   };
 
-  const signUp = async (
-    email: string,
-    password: string,
-    role: UserRole = "visitante"
-  ) => {
+  const signUp = async (email: string, password: string) => {
     try {
+      setLoading(true);
+      setError(null);
+
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -236,67 +275,107 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       if (error) throw error;
 
-      if (data.user && data.user.email) {
+      if (data.user) {
         // Criar perfil do usuário
         const { error: profileError } = await supabase
           .from("user_profiles")
-          .insert({
-            id: data.user.id,
-            email: data.user.email,
-            role,
-            subscription_active: false,
-            created_at: new Date().toISOString(),
-          });
+          .insert([
+            {
+              id: data.user.id,
+              email: data.user.email || "",
+              role: "user",
+              subscription_active: false,
+              created_at: new Date().toISOString(),
+            },
+          ]);
 
         if (profileError) {
           console.error("Error creating user profile:", profileError);
           throw profileError;
         }
+
+        toast.success(
+          "Conta criada com sucesso! Verifique seu email para confirmar o cadastro."
+        );
       }
 
       return data;
     } catch (error) {
       console.error("Error in signUp:", error);
+      setError(error instanceof Error ? error : new Error("Failed to sign up"));
+      toast.error("Erro ao criar conta");
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
   const signOut = async () => {
     try {
+      setLoading(true);
+      setError(null);
+
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
+
       setUser(null);
       setUserProfile(null);
       setSession(null);
+
+      toast.success("Logout realizado com sucesso");
     } catch (error) {
       console.error("Error in signOut:", error);
+      setError(
+        error instanceof Error ? error : new Error("Failed to sign out")
+      );
+      toast.error("Erro ao fazer logout");
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
   const resetPassword = async (email: string) => {
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email);
+      setLoading(true);
+      setError(null);
+
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/resetar-senha.html`,
+      });
+
       if (error) throw error;
+
+      toast.success("Email de recuperação de senha enviado com sucesso!");
     } catch (error) {
       console.error("Error in resetPassword:", error);
+      setError(
+        error instanceof Error ? error : new Error("Failed to reset password")
+      );
+      toast.error("Erro ao enviar email de recuperação de senha");
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
-  const value = {
-    user,
-    userProfile,
-    session,
-    loading,
-    error,
-    signIn,
-    signUp,
-    signOut,
-    resetPassword,
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        userProfile,
+        session,
+        loading,
+        error,
+        signIn,
+        signUp,
+        signOut,
+        resetPassword,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => {

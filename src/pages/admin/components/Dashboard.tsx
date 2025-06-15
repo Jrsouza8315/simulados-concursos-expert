@@ -1,110 +1,95 @@
 import { useEffect, useState } from "react";
-import { supabase } from "../../../lib/supabase";
-import { FileText, BookOpen, Users, ClipboardList } from "lucide-react";
+import { supabase } from "@/lib/supabase";
+import { FileText, BookOpen, Users, Clipboard } from "lucide-react";
 
 interface DashboardStats {
   totalQuestions: number;
-  totalApostilas: number;
   totalSimulados: number;
-  activeUsers: number;
+  totalUsers: number;
+  totalApostilas: number;
 }
 
-export function Dashboard() {
+export default function Dashboard() {
   const [stats, setStats] = useState<DashboardStats>({
     totalQuestions: 0,
-    totalApostilas: 0,
     totalSimulados: 0,
-    activeUsers: 0,
+    totalUsers: 0,
+    totalApostilas: 0,
   });
 
   useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const { data: questions } = await supabase
+          .from("questions")
+          .select("*");
+
+        const { data: simulados } = await supabase
+          .from("concursos")
+          .select("*");
+
+        const { data: profiles } = await supabase
+          .from("user_profiles")
+          .select("*");
+
+        const { data: apostilas } = await supabase
+          .from("apostilas")
+          .select("*");
+
+        setStats({
+          totalQuestions: questions?.length || 0,
+          totalSimulados: simulados?.length || 0,
+          totalUsers: profiles?.length || 0,
+          totalApostilas: apostilas?.length || 0,
+        });
+      } catch (error) {
+        console.error("Error fetching stats:", error);
+      }
+    };
+
     fetchStats();
   }, []);
 
-  const fetchStats = async () => {
-    try {
-      // Buscar total de questões
-      const { count: questionsCount } = await supabase
-        .from("questoes")
-        .select("*", { count: "exact", head: true });
-
-      // Buscar total de apostilas
-      const { count: apostilasCount } = await supabase
-        .from("apostilas")
-        .select("*", { count: "exact", head: true });
-
-      // Buscar total de simulados
-      const { count: simuladosCount } = await supabase
-        .from("simulados")
-        .select("*", { count: "exact", head: true });
-
-      // Buscar usuários ativos (últimos 30 dias)
-      const thirtyDaysAgo = new Date();
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
-      const { count: usersCount } = await supabase
-        .from("profiles")
-        .select("*", { count: "exact", head: true })
-        .gte("last_login", thirtyDaysAgo.toISOString());
-
-      setStats({
-        totalQuestions: questionsCount || 0,
-        totalApostilas: apostilasCount || 0,
-        totalSimulados: simuladosCount || 0,
-        activeUsers: usersCount || 0,
-      });
-    } catch (error) {
-      console.error("Erro ao buscar estatísticas:", error);
-    }
-  };
-
-  const StatCard = ({
-    title,
-    value,
-    icon: Icon,
-  }: {
-    title: string;
-    value: number;
-    icon: any;
-  }) => (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm text-gray-600">{title}</p>
-          <p className="text-2xl font-bold text-gray-800 mt-1">{value}</p>
-        </div>
-        <div className="bg-blue-100 p-3 rounded-full">
-          <Icon className="w-6 h-6 text-blue-600" />
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="bg-white p-6 rounded-lg shadow-md">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm text-gray-500">Total de Questões</p>
+            <p className="text-2xl font-bold">{stats.totalQuestions}</p>
+          </div>
+          <FileText className="h-8 w-8 text-blue-500" />
         </div>
       </div>
-    </div>
-  );
 
-  return (
-    <div>
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">Dashboard</h1>
+      <div className="bg-white p-6 rounded-lg shadow-md">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm text-gray-500">Total de Simulados</p>
+            <p className="text-2xl font-bold">{stats.totalSimulados}</p>
+          </div>
+          <Clipboard className="h-8 w-8 text-green-500" />
+        </div>
+      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard
-          title="Total de Questões"
-          value={stats.totalQuestions}
-          icon={FileText}
-        />
-        <StatCard
-          title="Apostilas Disponíveis"
-          value={stats.totalApostilas}
-          icon={BookOpen}
-        />
-        <StatCard
-          title="Simulados Gerados"
-          value={stats.totalSimulados}
-          icon={ClipboardList}
-        />
-        <StatCard
-          title="Usuários Ativos"
-          value={stats.activeUsers}
-          icon={Users}
-        />
+      <div className="bg-white p-6 rounded-lg shadow-md">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm text-gray-500">Total de Usuários</p>
+            <p className="text-2xl font-bold">{stats.totalUsers}</p>
+          </div>
+          <Users className="h-8 w-8 text-purple-500" />
+        </div>
+      </div>
+
+      <div className="bg-white p-6 rounded-lg shadow-md">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm text-gray-500">Total de Apostilas</p>
+            <p className="text-2xl font-bold">{stats.totalApostilas}</p>
+          </div>
+          <BookOpen className="h-8 w-8 text-orange-500" />
+        </div>
       </div>
     </div>
   );

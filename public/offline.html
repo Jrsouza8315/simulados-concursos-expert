@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Offline - Ponto Simulado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="bg-white p-8 rounded-lg shadow-md w-96 text-center">
+      <h1 class="text-2xl font-bold mb-4 text-gray-800">Você está offline</h1>
+      <p class="text-gray-600 mb-6">
+        Parece que você está sem conexão com a internet. Por favor, verifique
+        sua conexão e tente novamente.
+      </p>
+      <button
+        onclick="window.location.reload()"
+        class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+      >
+        Tentar Novamente
+      </button>
+    </div>
+  </body>
+</html>

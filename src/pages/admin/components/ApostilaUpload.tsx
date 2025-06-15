@@ -6,6 +6,8 @@ interface ApostilaFormData {
   nome: string;
   descricao: string;
   arquivo: File | null;
+  arquivo_url: string;
+  arquivo_path: string;
 }
 
 export function ApostilaUpload() {
@@ -13,6 +15,8 @@ export function ApostilaUpload() {
     nome: "",
     descricao: "",
     arquivo: null,
+    arquivo_url: "",
+    arquivo_path: "",
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -60,10 +64,14 @@ export function ApostilaUpload() {
       // Salvar informações da apostila no banco de dados
       const { error: dbError } = await supabase.from("apostilas").insert([
         {
-          nome: formData.nome,
+          titulo: formData.nome,
           descricao: formData.descricao,
+          categoria: "geral",
           arquivo_url: publicUrl,
           arquivo_path: filePath,
+          tamanho_bytes: formData.arquivo.size,
+          downloads: 0,
+          active: true,
         },
       ]);
 
@@ -74,6 +82,8 @@ export function ApostilaUpload() {
         nome: "",
         descricao: "",
         arquivo: null,
+        arquivo_url: "",
+        arquivo_path: "",
       });
       setUploadProgress(0);
 

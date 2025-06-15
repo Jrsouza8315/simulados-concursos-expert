@@ -6,6 +6,7 @@
     <title>Redefinir Senha - Ponto Simulado</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/sonner"></script>
   </head>
   <body class="bg-gray-100 min-h-screen flex items-center justify-center">
     <div class="bg-white p-8 rounded-lg shadow-md w-96">
@@ -52,7 +53,8 @@
 
         <button
           type="submit"
-          class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          id="submitButton"
+          class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Redefinir Senha
         </button>
@@ -60,11 +62,6 @@
     </div>
 
     <script>
-      const SUPABASE_URL = "https://YOUR_SUPABASE_PROJECT_URL.supabase.co";
-      const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
-
-      const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
       // Função para obter parâmetros da URL
       function getQueryParameter(param) {
         const urlParams = new URLSearchParams(window.location.search);
@@ -87,6 +84,26 @@
         document.getElementById("errorMessage").classList.add("hidden");
       }
 
+      // Função para desabilitar o botão durante o processamento
+      function setLoading(isLoading) {
+        const button = document.getElementById("submitButton");
+        button.disabled = isLoading;
+        button.textContent = isLoading ? "Processando..." : "Redefinir Senha";
+      }
+
+      // Inicializar o Supabase
+      const supabaseUrl = "https://jbrsikexamcvxaeibrwd.supabase.co";
+      const supabaseAnonKey =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpicnNpa2V4YW1jdnhhZWlicndkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg0ODI5NzUsImV4cCI6MjA2NDA1ODk3NX0.i0fbWF9o1em6dwqCy1Q8zDJzBNnzhM1NCeHCX8qTTnI";
+
+      const supabase = supabase.createClient(supabaseUrl, supabaseAnonKey, {
+        auth: {
+          autoRefreshToken: true,
+          persistSession: true,
+          detectSessionInUrl: true,
+        },
+      });
+
       document
         .getElementById("resetForm")
         .addEventListener("submit", async (e) => {
@@ -108,6 +125,8 @@
           }
 
           try {
+            setLoading(true);
+
             // Obter o token da URL
             const token = getQueryParameter("token");
 
@@ -130,10 +149,16 @@
 
             // Redirecionar para a página de login após 2 segundos
             setTimeout(() => {
-              window.location.href = "login.html";
+              window.location.href = "/#/login";
             }, 2000);
           } catch (error) {
-            showError("Erro ao processar a solicitação: " + error.message);
+            console.error("Error:", error);
+            showError(
+              "Erro ao processar a solicitação: " +
+                (error.message || "Erro desconhecido")
+            );
+          } finally {
+            setLoading(false);
           }
         });
     </script>

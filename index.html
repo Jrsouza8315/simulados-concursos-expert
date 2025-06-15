@@ -21,7 +21,7 @@
       href="/apple-touch-icon.png?v=2"
     />
     <link rel="manifest" href="/site.webmanifest" />
-    <meta name="theme-color" content="#243a69" />
+    <meta name="theme-color" content="#3b82f6" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Ponto Simulado</title>
     <meta
@@ -46,6 +46,24 @@
     <meta name="twitter:site" content="@pontosimulado" />
     <meta name="twitter:image" content="/logo.png" />
     <meta name="msapplication-TileColor" content="#243a69" />
+    <script>
+      // Registrar o Service Worker
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker
+            .register("/sw.js")
+            .then((registration) => {
+              console.log(
+                "Service Worker registrado com sucesso:",
+                registration
+              );
+            })
+            .catch((error) => {
+              console.error("Erro ao registrar Service Worker:", error);
+            });
+        });
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

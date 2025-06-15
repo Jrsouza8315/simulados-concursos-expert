@@ -17,10 +17,10 @@ import {
 interface StatisticsData {
   questoesPorAssunto: { assunto: string; total: number }[];
   questoesPorNivel: { nivel: string; total: number }[];
-  simuladosPorMes: { mes: string; total: number }[];
+  concursosPorMes: { mes: string; total: number }[];
   usuariosAtivos: number;
   totalQuestoes: number;
-  totalSimulados: number;
+  totalConcursos: number;
 }
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"];
@@ -29,10 +29,10 @@ export function Statistics() {
   const [stats, setStats] = useState<StatisticsData>({
     questoesPorAssunto: [],
     questoesPorNivel: [],
-    simuladosPorMes: [],
+    concursosPorMes: [],
     usuariosAtivos: 0,
     totalQuestoes: 0,
-    totalSimulados: 0,
+    totalConcursos: 0,
   });
 
   useEffect(() => {
@@ -53,9 +53,9 @@ export function Statistics() {
         .select("nivel, count(*) as total")
         .order("total", { ascending: false });
 
-      // Buscar simulados por mês
-      const simuladosPorMes = await supabase
-        .from("simulados")
+      // Buscar concursos por mês
+      const concursosPorMes = await supabase
+        .from("concursos")
         .select("created_at, count(*) as total")
         .order("created_at", { ascending: false });
 
@@ -64,17 +64,17 @@ export function Statistics() {
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
       const { count: usuariosAtivos } = await supabase
-        .from("profiles")
+        .from("user_profiles")
         .select("*", { count: "exact", head: true })
         .gte("last_login", thirtyDaysAgo.toISOString());
 
       // Buscar totais
       const { count: totalQuestoes } = await supabase
-        .from("questoes")
+        .from("questions")
         .select("*", { count: "exact", head: true });
 
-      const { count: totalSimulados } = await supabase
-        .from("simulados")
+      const { count: totalConcursos } = await supabase
+        .from("concursos")
         .select("*", { count: "exact", head: true });
 
       setStats({
@@ -88,14 +88,14 @@ export function Statistics() {
             nivel: string;
             total: number;
           }[]) || [],
-        simuladosPorMes:
-          (simuladosPorMes?.data as unknown as {
+        concursosPorMes:
+          (concursosPorMes?.data as unknown as {
             mes: string;
             total: number;
           }[]) || [],
         usuariosAtivos: usuariosAtivos || 0,
         totalQuestoes: totalQuestoes || 0,
-        totalSimulados: totalSimulados || 0,
+        totalConcursos: totalConcursos || 0,
       });
     } catch (error) {
       console.error("Erro ao buscar estatísticas:", error);
@@ -118,10 +118,10 @@ export function Statistics() {
 
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h3 className="text-lg font-medium text-gray-700 mb-2">
-            Total de Simulados
+            Total de Concursos
           </h3>
           <p className="text-3xl font-bold text-blue-600">
-            {stats.totalSimulados}
+            {stats.totalConcursos}
           </p>
         </div>
 
@@ -186,11 +186,11 @@ export function Statistics() {
 
         <div className="bg-white p-6 rounded-lg shadow-md lg:col-span-2">
           <h3 className="text-lg font-medium text-gray-700 mb-4">
-            Simulados por Mês
+            Concursos por Mês
           </h3>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={stats.simuladosPorMes}>
+              <BarChart data={stats.concursosPorMes}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="mes" />
                 <YAxis />

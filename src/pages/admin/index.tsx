@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
-import { Dashboard } from "./components/Dashboard";
-import { QuestionForm } from "./components/QuestionForm";
+import Dashboard from "./components/Dashboard";
+import QuestionForm from "./components/QuestionForm";
 import { ApostilaUpload } from "./components/ApostilaUpload";
 import { Statistics } from "./components/Statistics";
-import { Settings } from "./components/Settings";
+import Settings from "./components/Settings";
 import { Sidebar } from "./components/Sidebar";
 import { Alert } from "../../components/Alert";
 
@@ -34,7 +34,7 @@ export function AdminPage() {
       }
 
       const { data: profile } = await supabase
-        .from("profiles")
+        .from("user_profiles")
         .select("role")
         .eq("id", session.user.id)
         .single();

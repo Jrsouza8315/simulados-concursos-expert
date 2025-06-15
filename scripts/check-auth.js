@@ -1,10 +1,6 @@
-import { createClient } from "@supabase/supabase-js";
+import { getSupabaseClient } from "../src/lib/supabase";
 
-const SUPABASE_URL = "https://jbrsikexamcvxaeibrwd.supabase.co";
-const SUPABASE_ANON_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpicnNpa2V4YW1jdnhhZWlicndkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg0ODI5NzUsImV4cCI6MjA2NDA1ODk3NX0.i0fbWF9o1em6dwqCy1Q8zDJzBNnzhM1NCeHCX8qTTnI";
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabase = getSupabaseClient();
 
 const checkAuth = async () => {
   try {
