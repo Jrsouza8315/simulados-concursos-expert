@@ -1,8 +1,4 @@
 interface Config {
-  supabase: {
-    url: string;
-    anonKey: string;
-  };
   admin: {
     email: string;
   };
@@ -13,10 +9,6 @@ interface Config {
 }
 
 const config: Config = {
-  supabase: {
-    url: import.meta.env.VITE_SUPABASE_URL || "",
-    anonKey: import.meta.env.VITE_SUPABASE_ANON_KEY || "",
-  },
   admin: {
     email: import.meta.env.VITE_ADMIN_EMAIL || "",
   },
@@ -27,7 +19,11 @@ const config: Config = {
 };
 
 // Validação das variáveis de ambiente obrigatórias
-const requiredEnvVars = ["VITE_SUPABASE_URL", "VITE_SUPABASE_ANON_KEY"];
+const requiredEnvVars = [
+  "VITE_SUPABASE_URL",
+  "VITE_SUPABASE_ANON_KEY",
+  "VITE_ADMIN_EMAIL",
+];
 
 for (const envVar of requiredEnvVars) {
   if (!import.meta.env[envVar]) {

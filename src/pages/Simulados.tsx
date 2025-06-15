@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "../components/ui/card";
-import { supabase } from "../integrations/supabase/client";
+import { supabase } from "../lib/supabase";
 import { toast } from "sonner";
 import { Question } from "../types/admin";
 import { Badge } from "../components/ui/badge";
