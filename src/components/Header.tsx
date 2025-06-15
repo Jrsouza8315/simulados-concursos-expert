@@ -43,9 +43,12 @@ const Header = () => {
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
           <div className="flex items-center -ml-3">
-            <a href="/" className="flex items-center">
+            <a
+              href="https://jrsouza8315.github.io/simulados-concursos-expert/"
+              className="flex items-center"
+            >
               <img
-                src="/logo.png"
+                src="https://jrsouza8315.github.io/simulados-concursos-expert/logo.png"
                 alt="Ponto Simulado"
                 className="h-16 w-auto object-contain"
               />
