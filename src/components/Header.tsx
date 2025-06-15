@@ -48,7 +48,7 @@ const Header = () => {
               className="flex items-center"
             >
               <img
-                src="/images/logo.png"
+                src="https://raw.githubusercontent.com/Jrsouza8315/simulados-concursos-expert/main/public/images/logo.png"
                 alt="Ponto Simulado"
                 className="h-16 w-auto object-contain"
               />
