@@ -48,7 +48,7 @@ const Header = () => {
               <img
                 src="https://raw.githubusercontent.com/Jrsouza8315/simulados-concursos-expert/main/public/images/logo.png"
                 alt="PONTO"
-                className="h-12 w-auto object-contain"
+                className="h-16 w-auto object-contain"
               />
             </a>
           </div>
