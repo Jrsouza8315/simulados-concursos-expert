@@ -1,14 +1,12 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Button } from "./ui/button";
 import { Menu, User, Search, LogOut } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { getFullUrl } from "../utils/url";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { userProfile, signOut } = useAuth();
-  const navigate = useNavigate();
 
   const handleSignOut = async () => {
     try {
@@ -48,7 +46,7 @@ const Header = () => {
               className="flex items-center"
             >
               <img
-                src="https://github.com/Jrsouza8315/simulados-concursos-expert/blob/main/public/images/logo.png"
+                src="https://raw.githubusercontent.com/Jrsouza8315/simulados-concursos-expert/main/public/images/logo.png"
                 alt="PONTO"
                 className="h-12 w-auto object-contain"
               />

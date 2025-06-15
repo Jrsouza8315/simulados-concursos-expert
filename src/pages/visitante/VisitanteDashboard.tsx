@@ -1,21 +1,51 @@
-
-import React from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Lock, BookOpen, Newspaper, CreditCard, Star, Crown } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
-import { Link } from 'react-router-dom';
-import Header from '@/components/Header';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Lock,
+  BookOpen,
+  Newspaper,
+  CreditCard,
+  Star,
+  Crown,
+} from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { Link } from "react-router-dom";
+import Header from "@/components/Header";
 
 const VisitanteDashboard = () => {
   const { userProfile } = useAuth();
 
   const freeContent = [
-    { id: 1, title: "Noções de Direito Constitucional", type: "Apostila", available: true },
-    { id: 2, title: "Português para Concursos - Básico", type: "Apostila", available: true },
-    { id: 3, title: "Edital TRT 2024 - Análise Completa", type: "Notícia", available: true },
-    { id: 4, title: "Simulado Básico - Português", type: "Simulado", available: false },
-    { id: 5, title: "Questões Comentadas - Direito Admin", type: "Simulado", available: false }
+    {
+      id: 1,
+      title: "Noções de Direito Constitucional",
+      type: "Apostila",
+      available: true,
+    },
+    {
+      id: 2,
+      title: "Português para Concursos - Básico",
+      type: "Apostila",
+      available: true,
+    },
+    {
+      id: 3,
+      title: "Edital TRT 2024 - Análise Completa",
+      type: "Notícia",
+      available: true,
+    },
+    {
+      id: 4,
+      title: "Simulado Básico - Português",
+      type: "Simulado",
+      available: false,
+    },
+    {
+      id: 5,
+      title: "Questões Comentadas - Direito Admin",
+      type: "Simulado",
+      available: false,
+    },
   ];
 
   const premiumFeatures = [
@@ -24,7 +54,7 @@ const VisitanteDashboard = () => {
     "Correções detalhadas com comentários",
     "Relatórios de desempenho",
     "Suporte prioritário",
-    "Cronômetro avançado nos simulados"
+    "Cronômetro avançado nos simulados",
   ];
 
   return (
@@ -78,9 +108,14 @@ const VisitanteDashboard = () => {
               <CardContent>
                 <div className="space-y-3">
                   {freeContent.map((content) => (
-                    <div key={content.id} className={`flex items-center justify-between p-3 border rounded-lg ${
-                      content.available ? 'hover:bg-gray-50' : 'bg-gray-50 opacity-60'
-                    }`}>
+                    <div
+                      key={content.id}
+                      className={`flex items-center justify-between p-3 border rounded-lg ${
+                        content.available
+                          ? "hover:bg-gray-50"
+                          : "bg-gray-50 opacity-60"
+                      }`}
+                    >
                       <div className="flex items-center gap-3">
                         {content.available ? (
                           <div className="w-2 h-2 bg-green-500 rounded-full"></div>
@@ -88,10 +123,18 @@ const VisitanteDashboard = () => {
                           <Lock className="h-4 w-4 text-gray-400" />
                         )}
                         <div>
-                          <p className={`font-medium ${content.available ? 'text-primary-900' : 'text-gray-500'}`}>
+                          <p
+                            className={`font-medium ${
+                              content.available
+                                ? "text-primary-900"
+                                : "text-gray-500"
+                            }`}
+                          >
                             {content.title}
                           </p>
-                          <p className="text-xs text-gray-500">{content.type}</p>
+                          <p className="text-xs text-gray-500">
+                            {content.type}
+                          </p>
                         </div>
                       </div>
                       {content.available ? (
@@ -153,7 +196,11 @@ const VisitanteDashboard = () => {
                   <p className="text-sm text-gray-600">
                     Edital previsto para março de 2024...
                   </p>
-                  <Button size="sm" variant="link" className="p-0 h-auto text-xs">
+                  <Button
+                    size="sm"
+                    variant="link"
+                    className="p-0 h-auto text-xs"
+                  >
                     Ler mais
                   </Button>
                 </div>
@@ -164,7 +211,11 @@ const VisitanteDashboard = () => {
                   <p className="text-sm text-gray-600">
                     Estratégias eficazes para dominar a matéria...
                   </p>
-                  <Button size="sm" variant="link" className="p-0 h-auto text-xs">
+                  <Button
+                    size="sm"
+                    variant="link"
+                    className="p-0 h-auto text-xs"
+                  >
                     Ler mais
                   </Button>
                 </div>
@@ -175,7 +226,11 @@ const VisitanteDashboard = () => {
                   <p className="text-sm text-gray-600">
                     Monte um plano eficiente para sua aprovação...
                   </p>
-                  <Button size="sm" variant="link" className="p-0 h-auto text-xs">
+                  <Button
+                    size="sm"
+                    variant="link"
+                    className="p-0 h-auto text-xs"
+                  >
                     Ler mais
                   </Button>
                 </div>

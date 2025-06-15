@@ -1,7 +1,6 @@
 import React from "react";
 import Header from "../Header";
 import Footer from "../Footer";
-import { Link } from "react-router-dom";
 
 interface MainLayoutProps {
   children: React.ReactNode;
