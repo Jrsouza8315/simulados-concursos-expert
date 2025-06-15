@@ -166,19 +166,27 @@ const Simulados = () => {
                 </p>
               ) : (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {Array.from(new Set(questions.map((q) => q.category))).map(
-                    (category) => (
-                      <div
-                        key={category}
-                        className="flex items-center justify-between p-4 border rounded-lg"
-                      >
-                        <span>{category}</span>
-                        <Badge variant="secondary">
-                          {
-                            questions.filter((q) => q.category === category)
-                              .length
-                          }
-                        </Badge>
+                  {Array.from(new Set(questions.map((q) => q.materia))).map(
+                    (materia) => (
+                      <div key={materia} className="mb-4">
+                        <h3 className="text-lg font-semibold mb-2">
+                          {materia}
+                        </h3>
+                        <div className="space-y-2">
+                          {questions
+                            .filter((q) => q.materia === materia)
+                            .map((question) => (
+                              <div
+                                key={question.id}
+                                className="flex items-center justify-between p-4 border rounded-lg"
+                              >
+                                <span>{question.enunciado}</span>
+                                <Badge variant="secondary">
+                                  {question.materia}
+                                </Badge>
+                              </div>
+                            ))}
+                        </div>
                       </div>
                     )
                   )}

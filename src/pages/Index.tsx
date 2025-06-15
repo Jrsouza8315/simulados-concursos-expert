@@ -1,4 +1,3 @@
-import { Button } from "../components/ui/button";
 import { Search, BookOpen, Target, Award, Users } from "lucide-react";
 import HeroSection from "../components/HeroSection";
 import FeaturesSection from "../components/FeaturesSection";

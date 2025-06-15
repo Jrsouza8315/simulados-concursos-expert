@@ -74,17 +74,17 @@ export const validateToken = async (token: string): Promise<boolean> => {
 };
 
 // Função para registrar tentativas de acesso suspeitas
-export const logSuspiciousActivity = async (
+export const logSecurityEvent = async (
   userId: string,
-  action: string,
-  details: string
-): Promise<void> => {
+  _action: string,
+  _details: string
+) => {
   try {
     await supabase.from("activity_log").insert([
       {
         user_id: userId,
-        type: "SECURITY_ALERT",
-        description: `Atividade suspeita: ${action} - ${details}`,
+        action: "login",
+        details: "Login realizado com sucesso",
       },
     ]);
   } catch (error) {

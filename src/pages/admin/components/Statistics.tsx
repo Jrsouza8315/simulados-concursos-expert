@@ -42,61 +42,22 @@ export function Statistics() {
   const fetchStatistics = async () => {
     try {
       // Buscar questões por assunto
-      const { data: questoesPorAssunto } = await supabase
-        .from("questoes")
-        .select("assunto")
-        .then(({ data }) => {
-          const counts = data?.reduce(
-            (acc: { [key: string]: number }, curr) => {
-              acc[curr.assunto] = (acc[curr.assunto] || 0) + 1;
-              return acc;
-            },
-            {}
-          );
-          return Object.entries(counts || {}).map(([assunto, total]) => ({
-            assunto,
-            total,
-          }));
-        });
+      const questoesPorAssunto = await supabase
+        .from("questions")
+        .select("assunto, count(*) as total")
+        .group("assunto");
 
       // Buscar questões por nível
-      const { data: questoesPorNivel } = await supabase
-        .from("questoes")
-        .select("nivel")
-        .then(({ data }) => {
-          const counts = data?.reduce(
-            (acc: { [key: string]: number }, curr) => {
-              acc[curr.nivel] = (acc[curr.nivel] || 0) + 1;
-              return acc;
-            },
-            {}
-          );
-          return Object.entries(counts || {}).map(([nivel, total]) => ({
-            nivel,
-            total,
-          }));
-        });
+      const questoesPorNivel = await supabase
+        .from("questions")
+        .select("nivel, count(*) as total")
+        .group("nivel");
 
       // Buscar simulados por mês
-      const { data: simuladosPorMes } = await supabase
+      const simuladosPorMes = await supabase
         .from("simulados")
-        .select("created_at")
-        .then(({ data }) => {
-          const counts = data?.reduce(
-            (acc: { [key: string]: number }, curr) => {
-              const mes = new Date(curr.created_at).toLocaleString("pt-BR", {
-                month: "long",
-              });
-              acc[mes] = (acc[mes] || 0) + 1;
-              return acc;
-            },
-            {}
-          );
-          return Object.entries(counts || {}).map(([mes, total]) => ({
-            mes,
-            total,
-          }));
-        });
+        .select("created_at, count(*) as total")
+        .group("created_at");
 
       // Buscar usuários ativos (últimos 30 dias)
       const thirtyDaysAgo = new Date();

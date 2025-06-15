@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import {
   Tabs,
   TabsContent,
@@ -53,7 +53,6 @@ const cadastroSchema = z
   });
 
 const Acesso = () => {
-  const navigate = useNavigate();
   const { signIn, signUp, user, userProfile } = useAuth();
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [mostrarSenhaCadastro, setMostrarSenhaCadastro] = useState(false);

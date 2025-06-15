@@ -28,20 +28,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Plus,
-  Search,
-  RefreshCw,
-  Edit,
-  Trash2,
-  Link as LinkIcon,
-} from "lucide-react";
+import { Plus, RefreshCw, Edit, Trash2, Link as LinkIcon } from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 

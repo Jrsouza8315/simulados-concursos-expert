@@ -43,7 +43,7 @@ export function ApostilaUpload() {
       const fileName = `${Math.random()}.${fileExt}`;
       const filePath = `apostilas/${fileName}`;
 
-      const { error: uploadError, data } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from("apostilas")
         .upload(filePath, formData.arquivo, {
           cacheControl: "3600",

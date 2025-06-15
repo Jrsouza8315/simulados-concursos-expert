@@ -1,45 +1,33 @@
-
 import { useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { 
-  Tabs, 
-  TabsContent, 
-  TabsList, 
-  TabsTrigger 
-} from "@/components/ui/tabs";
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardHeader, 
-  CardTitle 
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, FileText, MapPin } from "lucide-react";
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger 
-} from "@/components/ui/dropdown-menu";
-import { 
-  Pagination, 
-  PaginationContent, 
-  PaginationEllipsis, 
-  PaginationItem, 
-  PaginationLink, 
-  PaginationNext, 
-  PaginationPrevious 
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
 } from "@/components/ui/pagination";
 
 // Tipos de dados
@@ -74,7 +62,7 @@ const concursosData: Concurso[] = [
     estado: "SP",
     regiao: "Sudeste",
     editalUrl: "#",
-    nacional: false
+    nacional: false,
   },
   {
     id: "2",
@@ -89,7 +77,7 @@ const concursosData: Concurso[] = [
     estado: "RJ",
     regiao: "Sudeste",
     editalUrl: "#",
-    nacional: false
+    nacional: false,
   },
   {
     id: "3",
@@ -102,7 +90,7 @@ const concursosData: Concurso[] = [
     dataInscricaoFim: "2025-07-10",
     taxaInscricao: "R$ 180,00",
     editalUrl: "#",
-    nacional: true
+    nacional: true,
   },
   {
     id: "4",
@@ -115,7 +103,7 @@ const concursosData: Concurso[] = [
     dataInscricaoFim: "2025-08-01",
     taxaInscricao: "R$ 90,00",
     editalUrl: "#",
-    nacional: true
+    nacional: true,
   },
   {
     id: "5",
@@ -130,7 +118,7 @@ const concursosData: Concurso[] = [
     estado: "BA",
     regiao: "Nordeste",
     editalUrl: "#",
-    nacional: false
+    nacional: false,
   },
   {
     id: "6",
@@ -145,7 +133,7 @@ const concursosData: Concurso[] = [
     estado: "DF",
     regiao: "Centro-Oeste",
     editalUrl: "#",
-    nacional: false
+    nacional: false,
   },
   {
     id: "7",
@@ -160,7 +148,7 @@ const concursosData: Concurso[] = [
     estado: "RS",
     regiao: "Sul",
     editalUrl: "#",
-    nacional: false
+    nacional: false,
   },
   {
     id: "8",
@@ -175,17 +163,17 @@ const concursosData: Concurso[] = [
     estado: "AM",
     regiao: "Norte",
     editalUrl: "#",
-    nacional: false
-  }
+    nacional: false,
+  },
 ];
 
 // Mapeamento das regiões e estados
 const regioes = {
-  "Norte": ["AC", "AP", "AM", "PA", "RO", "RR", "TO"],
-  "Nordeste": ["AL", "BA", "CE", "MA", "PB", "PE", "PI", "RN", "SE"],
+  Norte: ["AC", "AP", "AM", "PA", "RO", "RR", "TO"],
+  Nordeste: ["AL", "BA", "CE", "MA", "PB", "PE", "PI", "RN", "SE"],
   "Centro-Oeste": ["DF", "GO", "MT", "MS"],
-  "Sudeste": ["ES", "MG", "RJ", "SP"],
-  "Sul": ["PR", "RS", "SC"]
+  Sudeste: ["ES", "MG", "RJ", "SP"],
+  Sul: ["PR", "RS", "SC"],
 };
 
 const Concursos = () => {
@@ -193,19 +181,19 @@ const Concursos = () => {
   const [currentTab, setCurrentTab] = useState("todos");
 
   // Filtrar concursos baseado na busca e na tab selecionada
-  const filteredConcursos = concursosData.filter(concurso => {
-    const matchesSearch = 
-      concurso.titulo.toLowerCase().includes(searchTerm.toLowerCase()) || 
+  const filteredConcursos = concursosData.filter((concurso) => {
+    const matchesSearch =
+      concurso.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
       concurso.orgao.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     if (currentTab === "todos") return matchesSearch;
     if (currentTab === "nacionais") return matchesSearch && concurso.nacional;
-    
+
     // Se for uma região específica
     if (Object.keys(regioes).includes(currentTab)) {
       return matchesSearch && concurso.regiao === currentTab;
     }
-    
+
     // Se for um estado específico
     return matchesSearch && concurso.estado === currentTab;
   });
@@ -213,14 +201,15 @@ const Concursos = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      
+
       <main className="flex-1 container mx-auto px-4 py-8 mt-16">
         <section className="mb-10">
           <h1 className="text-3xl font-bold mb-2">Concursos Abertos</h1>
           <p className="text-gray-600 mb-6">
-            Encontre os principais concursos abertos em todo o Brasil, organizados por região e data de inscrição.
+            Encontre os principais concursos abertos em todo o Brasil,
+            organizados por região e data de inscrição.
           </p>
-          
+
           {/* Barra de pesquisa */}
           <div className="relative mb-8">
             <Search className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
@@ -232,39 +221,45 @@ const Concursos = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          
+
           {/* Tabs para selecionar regiões */}
           <Tabs defaultValue="todos" onValueChange={setCurrentTab}>
             <TabsList className="mb-4 flex overflow-x-auto pb-2 space-x-1">
               <TabsTrigger value="todos">Todos</TabsTrigger>
               <TabsTrigger value="nacionais">Nacionais</TabsTrigger>
-              {Object.keys(regioes).map(regiao => (
+              {Object.keys(regioes).map((regiao) => (
                 <TabsTrigger key={regiao} value={regiao}>
                   {regiao}
                 </TabsTrigger>
               ))}
             </TabsList>
-            
+
             <TabsContent value="todos" className="mt-4">
               <ConcursosTable concursos={filteredConcursos} />
             </TabsContent>
-            
+
             <TabsContent value="nacionais" className="mt-4">
               <ConcursosTable concursos={filteredConcursos} />
             </TabsContent>
-            
-            {Object.keys(regioes).map(regiao => (
+
+            {Object.keys(regioes).map((regiao) => (
               <TabsContent key={regiao} value={regiao} className="mt-4">
                 <div className="mb-4">
-                  <h3 className="text-lg font-medium mb-2">Estados da região {regiao}:</h3>
+                  <h3 className="text-lg font-medium mb-2">
+                    Estados da região {regiao}:
+                  </h3>
                   <div className="flex flex-wrap gap-2">
-                    {regioes[regiao as keyof typeof regioes].map(estado => (
-                      <Button 
-                        key={estado} 
-                        variant="outline" 
+                    {regioes[regiao as keyof typeof regioes].map((estado) => (
+                      <Button
+                        key={estado}
+                        variant="outline"
                         size="sm"
                         onClick={() => setCurrentTab(estado)}
-                        className={currentTab === estado ? "bg-primary text-primary-foreground" : ""}
+                        className={
+                          currentTab === estado
+                            ? "bg-primary text-primary-foreground"
+                            : ""
+                        }
                       >
                         <MapPin className="h-4 w-4 mr-1" />
                         {estado}
@@ -275,30 +270,32 @@ const Concursos = () => {
                 <ConcursosTable concursos={filteredConcursos} />
               </TabsContent>
             ))}
-            
+
             {/* Conteúdo para tabs de estados */}
-            {Object.values(regioes).flat().map(estado => (
-              <TabsContent key={estado} value={estado} className="mt-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center">
-                      <MapPin className="h-5 w-5 mr-2" />
-                      Concursos em {estado}
-                    </CardTitle>
-                    <CardDescription>
-                      Listando concursos disponíveis para o estado de {estado}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <ConcursosTable concursos={filteredConcursos} />
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            ))}
+            {Object.values(regioes)
+              .flat()
+              .map((estado) => (
+                <TabsContent key={estado} value={estado} className="mt-4">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center">
+                        <MapPin className="h-5 w-5 mr-2" />
+                        Concursos em {estado}
+                      </CardTitle>
+                      <CardDescription>
+                        Listando concursos disponíveis para o estado de {estado}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <ConcursosTable concursos={filteredConcursos} />
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+              ))}
           </Tabs>
         </section>
       </main>
-      
+
       <Footer />
     </div>
   );
@@ -334,7 +331,9 @@ const ConcursosTable = ({ concursos }: { concursos: Concurso[] }) => {
                   <TableCell className="font-medium">
                     <div>
                       <div className="font-bold">{concurso.titulo}</div>
-                      <div className="text-sm text-gray-500">{concurso.orgao}</div>
+                      <div className="text-sm text-gray-500">
+                        {concurso.orgao}
+                      </div>
                       {concurso.estado && !concurso.nacional && (
                         <div className="flex items-center text-xs text-gray-500 mt-1">
                           <MapPin className="h-3 w-3 mr-1" />
@@ -353,9 +352,16 @@ const ConcursosTable = ({ concursos }: { concursos: Concurso[] }) => {
                   <TableCell>{concurso.salarioInicial}</TableCell>
                   <TableCell>
                     <div>
-                      <div className="text-xs">Início: {formatDate(concurso.dataInscricaoInicio)}</div>
-                      <div className="text-xs">Fim: {formatDate(concurso.dataInscricaoFim)}</div>
-                      {isInscritionActive(concurso.dataInscricaoInicio, concurso.dataInscricaoFim) && (
+                      <div className="text-xs">
+                        Início: {formatDate(concurso.dataInscricaoInicio)}
+                      </div>
+                      <div className="text-xs">
+                        Fim: {formatDate(concurso.dataInscricaoFim)}
+                      </div>
+                      {isInscritionActive(
+                        concurso.dataInscricaoInicio,
+                        concurso.dataInscricaoFim
+                      ) && (
                         <div className="bg-secondary/20 text-secondary text-xs px-2 py-0.5 rounded-md inline-block mt-1">
                           Inscrições abertas
                         </div>
@@ -364,7 +370,11 @@ const ConcursosTable = ({ concursos }: { concursos: Concurso[] }) => {
                   </TableCell>
                   <TableCell>{concurso.taxaInscricao}</TableCell>
                   <TableCell>
-                    <Button variant="outline" size="sm" className="flex items-center gap-1">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex items-center gap-1"
+                    >
                       <FileText className="h-4 w-4" />
                       Edital
                     </Button>
@@ -375,7 +385,7 @@ const ConcursosTable = ({ concursos }: { concursos: Concurso[] }) => {
           </TableBody>
         </Table>
       </div>
-      
+
       {/* Paginação */}
       <Pagination>
         <PaginationContent>
@@ -383,7 +393,9 @@ const ConcursosTable = ({ concursos }: { concursos: Concurso[] }) => {
             <PaginationPrevious href="#" />
           </PaginationItem>
           <PaginationItem>
-            <PaginationLink href="#" isActive>1</PaginationLink>
+            <PaginationLink href="#" isActive>
+              1
+            </PaginationLink>
           </PaginationItem>
           <PaginationItem>
             <PaginationLink href="#">2</PaginationLink>
@@ -406,7 +418,7 @@ const ConcursosTable = ({ concursos }: { concursos: Concurso[] }) => {
 // Funções de formatação e utilidades
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
-  return date.toLocaleDateString('pt-BR');
+  return date.toLocaleDateString("pt-BR");
 };
 
 const isInscritionActive = (start: string, end: string) => {

@@ -28,7 +28,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus, Search, RefreshCw, Edit, Trash2 } from "lucide-react";
+import { Plus, RefreshCw, Edit, Trash2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -40,12 +40,10 @@ import { Label } from "@/components/ui/label";
 
 export const QuestionManagement = () => {
   const [questions, setQuestions] = useState<Question[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredQuestions, setFilteredQuestions] = useState<Question[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const [formData, setFormData] = useState({
     enunciado: "",
@@ -57,7 +55,6 @@ export const QuestionManagement = () => {
 
   const fetchQuestions = async () => {
     try {
-      setLoading(true);
       const { data, error } = await supabase
         .from("questions")
         .select("*")
@@ -69,8 +66,6 @@ export const QuestionManagement = () => {
     } catch (error) {
       console.error("Error fetching questions:", error);
       toast.error("Erro ao carregar questões");
-    } finally {
-      setLoading(false);
     }
   };
 

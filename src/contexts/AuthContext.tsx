@@ -1,14 +1,7 @@
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  ReactNode,
-} from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "../integrations/supabase/client";
 import type { User, Session } from "@supabase/supabase-js";
 import { UserProfile } from "../types";
-import { getFullUrl } from "../utils/url";
 import { toast } from "sonner";
 
 export type UserRole = "admin" | "assinante" | "visitante";
@@ -47,7 +40,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+  const [error] = useState<Error | null>(null);
 
   useEffect(() => {
     // Verificar sessão atual
